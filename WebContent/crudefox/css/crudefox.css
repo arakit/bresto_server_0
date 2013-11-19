@@ -1,0 +1,55 @@
+/*!
+ * @author Chikara Funabashi
+ */
+
+
+.cf-div {
+	
+
+  /*
+  padding: 60px;
+  margin-bottom: 30px;
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 30px;
+  color: inherit;
+  */
+  
+
+  
+  padding: 24px;
+  
+  /*
+  margin: 24px;  
+  
+  border-width: 5px 5px 5px 5px;
+  
+  
+  border-color: #ff0000;
+  */
+  
+  border: 1px solid #000000;
+  
+  /*
+  background-color: #eeeeee;
+  */
+  
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+
+/*
+.cf-div h1 {
+  margin-bottom: 0;
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: inherit;
+}
+
+.cf-div li {
+  line-height: 30px;
+}
+*/
