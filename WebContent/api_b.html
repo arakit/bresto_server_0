@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>ぶれすと！</title>
+    <title>ブレスト！サーバー0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -76,7 +76,7 @@
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
         <h1>BreSto API Version 0.1</h1>
-        <p>APIのテストページ</p>
+        <p>APIの仕様一覧です。</p>
       </div>
 
       <!-- Example row of columns -->
@@ -121,79 +121,6 @@
 	        </div>
 	      </div>
 
-          <!--  -->
-
-          </br>
-
-	      <!-- 22222  -->
-	      <div class="row">
-	        <div class="span10 offset1 cf-div">
-	          <h2>WebSocket通信開始</h2>
-	          <p>WebSocket通信開始</p>
-
-	          <button type="submit" class="btn btn-primary" onclick='onTest001Click()'>さぁ！</button>
-
-
-	        </div>
-	      </div>
-
-          <!--  -->
-
-          <br>
-
-	      <!-- AddNode  -->
-	      <div class="row">
-	        <div class="span10 offset1 cf-div">
-	          <h2>AddNode</h2>
-	          <p>AddNode</p>
-
-	          <h3>パラメータ</h3>
-	          <table class="table table-striped table-bordered table-hover">
-	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
-	          	<tbody>
-	              <tr>
-	                <td>keyword</td>
-	                <td>キーワード</td>
-	              </tr>
-	            </tbody>
-	          </table>
-
-
-
-		      <!-- enctype="multipart/form-data" -->
-	          <form class="form-horizontal well" method="post" action="api/add_node"  enctype="multipart/form-data" >
-	            <fieldset>
-	              <legend>AddNode</legend>
-
-	              <div class="control-group">
-	                <label class="control-label" for="keyword">keyword</label>
-	                <div class="controls">
-	                  <input type="text" class="input-xlarge" id="keyword" name="keyword" >
-	                  <p class="help-block"></p>
-	                </div>
-	              </div>
-
-	              <div class="control-group">
-	                <label class="control-label" for="parent_kid">parent_kid</label>
-	                <div class="controls">
-	                  <input type="text" class="input-xlarge" id="parent_kid" name="parent_kid" >
-	                  <p class="help-block"></p>
-	                </div>
-	              </div>
-
-	              <div class="form-actions">
-	                <button type="submit" class="btn btn-primary">送信</button>
-	                <button type="reset" class="btn">キャンセル</button>
-	              </div>
-	            </fieldset>
-	          </form>
-
-	        </div>
-	      </div>
-
-          <!--  -->
-
-
 
 	    </div>
 
@@ -211,45 +138,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <!--<script src="../assets/js/jquery.js"></script>-->
     <script src="bootstrap/js/bootstrap.min.js"></script>
-
-
-    <script type="text/javascript">
-      function onTest001Click(s) {
-    	//$('#'+s).attr('checked', !$('#'+s).attr('checked') );
-
-    	  //var connection = new WebSocket('ws://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  //var connection = new WebSocket('wss://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  //var connection = new WebSocket('wss://192.168.1.146:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  var connection = new WebSocket('ws://192.168.1.112:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  //var connection = new WebSocket('ws://192.168.1.146:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  
-
-  		// Log errors
-  		connection.onerror = function (error) {
-  		  console.log('WebSocket Error ' + error);
-  		};
-
-  		// Log messages from the server
-  		connection.onmessage = function (e) {
-  		  console.log('Server: ' + e.data);
-  		};
-
-    	connection.onopen = function () {
-    		 connection.send('Hello!'); // Send the message 'Ping' to the server
-    	};
-
-
-      }
-	</script>
-
-	<script type="text/javascript">
-
-
-
-	</script>
-
-
 
   </body>
 </html>
