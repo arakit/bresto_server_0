@@ -217,11 +217,16 @@
       function onTest001Click(s) {
     	//$('#'+s).attr('checked', !$('#'+s).attr('checked') );
 
+    	  var connection = new WebSocket('ws://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge');
+    	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge');
+    	  
+    	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  
     	  //var connection = new WebSocket('ws://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
     	  //var connection = new WebSocket('wss://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
     	  //var connection = new WebSocket('wss://192.168.1.146:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
     	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
-    	  var connection = new WebSocket('ws://192.168.1.112:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  //var connection = new WebSocket('ws://192.168.1.112:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
     	  //var connection = new WebSocket('ws://192.168.1.146:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
     	  
 
