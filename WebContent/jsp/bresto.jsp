@@ -1,13 +1,27 @@
+<%@page import="jp.crudefox.server.bresto.Const"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="jp.crudefox.server.bresto.db.DBProjectTable.ProjectRow"%>
 <%@ page contentType="text/html;charset=utf-8" %>
 <%-- JavaBeansをインポートします。 --%>
 <%@ page import="java.beans.Beans.*" %>
 <%-- <jsp:useBean>タグでJavaBeansのオブジェクトを生成します。 --%>
 
+<%
+
+List<ProjectRow> project_list = (List<ProjectRow>) request.getAttribute(Const.REQ_PROJECT_LIST);
+
+
+
+
+
+%>
+
 <jsp:include page="header.jsp" />
 
 
       <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
+      <div class="jumbotron">
         <h1>BreSto一覧</h1>
         <p>ぶれすと図へ参加しよう</p>
       </div>
@@ -18,7 +32,7 @@
 	      <!-- 22222  -->
 	      <!--
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="span10 col-md-offset-1 cf-div">
 	          <h2>WebSocket通信開始</h2>
 	          <p>WebSocket通信開始</p>
 
@@ -31,74 +45,75 @@
 
           <!--  -->
 
-          <br />
 
-	      <!-- SetGood  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
-	          <h2>ぶれすと図</h2>
-	          <p>マインドマップを開きます。</p>
+	        <div class="col-md-10 col-md-offset-1">
+              <div class="btn-group btn-group-lg btn-group-justified">
+                <a class="btn btn-success" href="./create.html" role="button" href="#">新規作成</a>
+                <a class="btn btn-info" href="./join.html" role="button" href="#">IDから参加する</a>
+              </div>
+            </div>
+          </div>
 
-              <!--
-	          <h3>プロジェクトへ参加する。</h3>
-	          <table class="table table-striped table-bordered table-hover">
-	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
-	          	<tbody>
-	              <tr>
-	                <td>kid</td>
-	                <td>キーワードID</td>
-	              </tr>
-	            </tbody>
-	          </table>
-	          -->
-
-
-		      <!-- enctype="multipart/form-data" -->
-	          <form class="form-horizontal well" method="post" action="api/select_project"  enctype="multipart/form-data" >
-	            <fieldset>
-	              <legend>ぶれすと！</legend>
-
-	              <div class="control-group">
-	                <label class="control-label" for="project_id">project_id</label>
-	                <div class="controls">
-	                  <input type="text" class="input-xlarge" id="project_id" name="project_id" >
-	                  <p class="help-block"></p>
-	                </div>
-	              </div>
-
-	              <div class="control-group">
-	                <label class="control-label" for="value">value</label>
-	                <div class="controls">
-	                  <select id="value" name="value">
-	                    <option value="true">true</option>
-	                    <option value="false">false</option>
-	                  </select>
-	                  <p class="help-block"></p>
-	                </div>
-	              </div>
-
-	              <input type="hidden" id="mode" name="mode" value="navigate" />
-
-	              <div class="form-actions">
-	                <button type="submit" class="btn btn-primary">開く</button>
-	                <!--<button type="reset" class="btn">キャンセル</button>-->
-	              </div>
-	            </fieldset>
-	          </form>
-
-	        </div>
-	      </div>
-
-          <!-- SetGood -->
 
           <br />
 
 
+
+          <br />
+
+
+          <div class="page-header">
+           <h1>ぶれすと一覧</h1>
+          </div>
+		  <div class="row">
+
+		  <% for(ProjectRow e : project_list){ %>
+
+		    <div class="col-sm-6 col-md-4">
+		      <div class="thumbnail">
+		        <img data-src="holder.js/300x200" alt="300x200">
+		        <div class="caption">
+		          <h3><%= e.name %></h3>
+		          <p>作者：<%= ""+e.author_id %></p>
+		          <p>ID：<%= ""+e.id %></p>
+		          <p>公開URL：<%= ""+e.publish_url %></p>
+		          <p>
+		            <a href="./play.html" class="btn btn-primary btn-lg" role="button">開く</a>
+		            <!-- <a href="#" class="btn btn-default" role="button">キャンセル</a> -->
+		          </p>
+		        </div>
+		      </div>
+		    </div>
+
+		  <% } %>
+
+		  </div>
+		  
+          <div class="row">
+            <div class="pager">
+			  <ul class="pagination">
+			    <li><a href="#">&laquo;</a></li>
+			    <li><a href="#">1</a></li>
+			    <li><a href="#">2</a></li>
+			    <li><a href="#">3</a></li>
+			    <li><a href="#">4</a></li>
+			    <li><a href="#">5</a></li>
+			    <li><a href="#">&raquo;</a></li>
+			  </ul>
+		    </div>
+	  	  </div>		  
+
+
+		<hr />
+
+
+<!--
       <div class="page-header">
         <h1>Panels</h1>
       </div>
       <div class="row">
-        <div class="span4">
+        <div class="col-md-4">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Panel title</h3>
@@ -115,8 +130,8 @@
               Panel content
             </div>
           </div>
-        </div><!-- /.col-sm-4 -->
-        <div class="span4">
+        </div><!-- /.col-sm-4
+        <div class="col-md-4">
           <div class="panel panel-success">
             <div class="panel-heading">
               <h3 class="panel-title">Panel title</h3>
@@ -133,8 +148,8 @@
               Panel content
             </div>
           </div>
-        </div><!-- /.col-sm-4 -->
-        <div class="span4">
+        </div><!-- /.col-sm-4
+        <div class="col-md-4">
           <div class="panel panel-warning">
             <div class="panel-heading">
               <h3 class="panel-title">Panel title</h3>
@@ -151,52 +166,63 @@
               Panel content
             </div>
           </div>
-        </div><!-- /.col-sm-4 -->
-      </div>          
-
+        </div><!-- /.col-sm-4
+      </div>
+      -->
 
 
           <br />
 
-
-	<div class="row">
-	  <div class="span1"></div>
-	  <div class="span10 columns cf-div">
-	      <h2>よく使うブレスト図</h2>
-	      <hr />
-		  <div id="myCarousel" class="carousel slide" >
-		    <!-- Carousel items -->
-		    <div class="carousel-inner">
-		      <!-- item1 -->
-		      <div class="active item">
-		        <h3>マップ1</h3>
-		        <a class="btn pull-right"  href="#">開く</a>
-		        <img src="./img/carousel_test_1.jpg" alt="" width="870" height="500">
-		      </div>
-		      <!-- item2 -->
-		      <div class="item">
-		        <h3>マップ2</h3>
-		        <a class="btn"  href="#">開く</a>
-		        <img src="./img/carousel_test_2.jpg" alt="" width="870" height="500">
-		      </div>
-		      <!-- item3 -->
-		      <div class="item">
-		        <h3>マップ3</h3>
-		        <a class="btn"  href="#">開く</a>
-		        <img src="./img/carousel_test_3.jpg" alt="" width="870" height="500">
-		      </div>
-		    </div>
-		    <!-- Carousel nav -->
-		    <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-		    <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+    <!-- Carousel
+    ================================================== -->
+    <div class="row">
+	  <div class="col-md-12 cf-div">
+	  	<h2>よく使うブレスト図</h2>
+	  	<hr>
+	    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+	      <!-- Indicators -->
+	      <ol class="carousel-indicators">
+	        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+	        <li data-target="#myCarousel" data-slide-to="1"></li>
+	        <li data-target="#myCarousel" data-slide-to="2"></li>
+	      </ol>
+	      <div class="carousel-inner">
+	        <div class="item active">
+	          <img src="./img/carousel_test_1.jpg" alt="First slide" width="900" height="500" >
+	          <div class="container">
+	            <div class="carousel-caption">
+	              <h1>ぶれすと！</h1>
+	              <p>アイデアを広げよう！</p>
+	              <p><a class="btn btn-lg btn-primary" href="#" role="button">ログイン</a></p>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="item">
+	          <img src="./img/carousel_test_1.jpg" alt="Second slide"  width="900" height="500" >
+	          <div class="container">
+	            <div class="carousel-caption">
+	              <h1>ぶれすと！</h1>
+	              <p>アイデアを広げよう！</p>
+	              <p><a class="btn btn-lg btn-primary" href="#" role="button">ログイン</a></p>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="item">
+	          <img data-src="holder.js/900x500/auto/#555:#5a5a5a/text:Third slide" alt="Second slide"  width="900" height="500" >
+	          <div class="container">
+	            <div class="carousel-caption">
+	              <h1>ぶれすと！</h1>
+	              <p>アイデアを広げよう！</p>
+	              <p><a class="btn btn-lg btn-primary" href="#" role="button">ログイン</a></p>
+	            </div>
+	          </div>
+	        </div>
 	      </div>
-      </div>
-      <div class="span1"></div>
+	      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+	      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+	    </div><!-- /.carousel -->
+	  </div>
     </div>
-
-
-
-
 
 
 

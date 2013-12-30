@@ -7,21 +7,13 @@
 
 
    <div class="">
-      <form class="form-signin well" action="./api/login"  method="post" >
-      
-        <div class="checkbox pull-right">
-          <a href="signup.html">新規作成</a>
-        </div>
-              
-        <h2 class="form-signin-heading">ログイン</h2>
+      <form class="form-signin well" action="./api/create_user"  method="post" >
+        <h2 class="form-signin-heading">新規作成</h2>
         <input type="text" class="form-control" placeholder="User ID" required autofocus id="user_id" name="user_id">
         <input type="password" class="form-control" placeholder="Password" required  id="user_password" name="user_password">
-        <label class="checkbox">
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
+        <input type="password" class="form-control" placeholder="Password" required  id="user_password2" name="user_password2">
         <input type="hidden" id="mode" name="mode" value="navigate">
-        <button class="btn btn-primary btn-block" type="submit">ログイン</button>
-
+        <button class="btn btn-danger btn-block" type="submit">新規作成</button>
       </form>
    </div>
 

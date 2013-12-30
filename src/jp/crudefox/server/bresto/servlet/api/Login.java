@@ -109,7 +109,7 @@ public class Login extends HttpServlet {
 
 	         //結果
 	         if("navigate".equals(mode)){
-		        response.sendRedirect("../index.html");
+		        response.sendRedirect("../bresto.html");
 	         }else{
 		         ObjectMapper om = new ObjectMapper();
 		         om.configure(SerializationFeature.INDENT_OUTPUT  , true);

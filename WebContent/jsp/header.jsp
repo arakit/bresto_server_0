@@ -52,17 +52,22 @@
     <!-- Le styles -->
     <link href="bootstrap3/css/bootstrap.css" rel="stylesheet">
     <link href="crudefox/css/crudefox.css" rel="stylesheet">
+
+
     <style type="text/css">
       body {
+
         padding-top: 60px;
         padding-bottom: 40px;
+
       }
     </style>
     <!-- <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">-->
     <!-- <link rel="stylesheet" href="bootstrap/css/bootstrap-switch.css" />-->
-    
+
     <!-- Custom styles for this template -->
-    <link href="crudefox/css/signin.css" rel="stylesheet">    
+    <link href="crudefox/css/signin.css" rel="stylesheet">
+    <link href="crudefox/css/carousel.css" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -81,61 +86,61 @@
 
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar">a</span>
+            <span class="icon-bar">b</span>
+            <span class="icon-bar">c</span>
           </button>
-          <a class="brand" href="./index.html">ぶれすと！</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <% for(Head e : heads){ %>
-              <li class="<%= e.class_name %>"><a href="<%= e.url %>"><%= e.title %></a></li>
-              <% } %>
-              <!--
-              <li><a href="index.html">ホーム</a></li>
-              <li><a href="about.html">Abount</a></li>
-              <li class="active"><a href="api.html">API</a></li>
-              -->
-              <!--
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">その他 <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#">menu1</a></li>
-                  <li class="divider"></li>
-                  <li class="nav-header">menu2</li>
-                  <li><a href="#">menu2-1</a></li>
-                </ul>
-              </li>
-              -->
-            </ul>
-
-            <!--
-            <form class="navbar-form pull-right">
-              <input class="span2" type="text" placeholder="Email">
-              <input class="span2" type="password" placeholder="Password">
-              <button type="submit" class="btn">Sign in</button>
-            </form>
-            -->
-
-            <% if(!is_logined){ %>
-            <ul class="navbar-form pull-right">
-              <span><a class="btn" href="./signin.html">ログイン</a></span>
-            </ul>
-            <% }else{ %>
-            <ul class="navbar-form pull-right">
-              <span class="active"><a href="#"><%= user_id %></a></span>
-              <a class="btn" href="./api/logout?mode=navigate">ログアウト</a>
-            </ul>
-            <% } %>
-
-          </div><!--/.nav-collapse -->
+          <a class="navbar-brand" href="./">ぶれすと！</a>
         </div>
+        <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <% for(Head e : heads){ %>
+            <li class="<%= e.class_name %>"><a href="<%= e.url %>"><%= e.title %></a></li>
+            <% } %>
+            <!--
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+            -->
+          </ul>
+
+
+          <% if(!is_logined){ %>
+          <form class="navbar-form navbar-right" role="form" action="" method="post">
+            <input type="hidden" name="mode" id="navigate" />
+            <a href="./signin.html" class="btn btn-success">ログイン</a>
+          </form>
+          <% }else{ %>
+          <form class="navbar-form navbar-right" role="form" action="./api/logout" method="post">
+            <a href="#"><%= user_id %></a>
+            <input type="hidden" name="mode" value="navigate" />
+            <button type="submit" class="btn btn-success">ログアウト</button>
+          </form>
+          <% } %>
+
+
+
+        </div><!--/.navbar-collapse -->
       </div>
     </div>
+
+
+
+
 
     <!-- container -->
     <div class="container">

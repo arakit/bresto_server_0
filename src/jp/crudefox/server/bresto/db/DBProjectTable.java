@@ -3,6 +3,7 @@ package jp.crudefox.server.bresto.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,18 @@ public class DBProjectTable {
 		mConnection = cn;
 	}
 
+
+	private ProjectRow getFromRow(ResultSet rs) throws SQLException{
+		ProjectRow row;
+    	row = new ProjectRow();
+    	row.id = rs.getString(COL_ID);
+    	row.name = rs.getString(COL_NAME);
+    	row.author_id = rs.getString(COL_AUTHOR_ID);
+    	row.publish_url = rs.getString(COL_PULISH_URL);
+    	return row;
+	}
+
+
 	public ProjectRow getById(String id){
 
 
@@ -63,11 +76,7 @@ public class DBProjectTable {
 	        //int cnum = rm.getColumnCount();
 	        if(rs.first()){
 	        	ProjectRow row;
-	        	row = new ProjectRow();
-	        	row.id = rs.getString(COL_ID);
-	        	row.name = rs.getString(COL_NAME);
-	        	row.author_id = rs.getString(COL_AUTHOR_ID);
-	        	row.publish_url = rs.getString(COL_PULISH_URL);
+	        	row = getFromRow(rs);
 	        	result = row;
 	        }
 
@@ -107,11 +116,49 @@ public class DBProjectTable {
 
 	        while(rs.next()){
 	        	ProjectRow row;
-	        	row = new ProjectRow();
-	        	row.id = rs.getString(COL_ID);
-	        	row.name = rs.getString(COL_NAME);
-	        	row.author_id = rs.getString(COL_AUTHOR_ID);
-	        	row.publish_url = rs.getString(COL_PULISH_URL);
+	        	row = getFromRow(rs);
+	        	list.add(row);
+	        }
+
+	        result = list;
+
+	        //接続のクローズ
+	        rs.close();
+	        st.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+	
+	public List<ProjectRow> listAll(){
+
+		List<ProjectRow> result = null;
+
+		try {
+
+	        //問い合わせの準備
+	        String qry1 = String.format("select * from %s",
+	        		TABLE_NAME
+	        );
+
+	        PreparedStatement st = mConnection.prepareStatement(qry1);
+	        //st.setString(1, author_id);
+
+	        //問い合わせ
+	        ResultSet rs = st.executeQuery();
+
+	        //データの取得
+	        //ResultSetMetaData rm = rs.getMetaData();
+	        //int cnum = rm.getColumnCount();
+
+	        ArrayList<ProjectRow> list = new ArrayList<ProjectRow>();
+
+	        while(rs.next()){
+	        	ProjectRow row;
+	        	row = getFromRow(rs);
 	        	list.add(row);
 	        }
 

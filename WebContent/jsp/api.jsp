@@ -7,7 +7,7 @@
 
 
       <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
+      <div class="jumbotron">
         <h1>BreSto API Version 0.1</h1>
         <p>APIのテストページ</p>
       </div>
@@ -17,7 +17,7 @@
 	      <!-- API ログイン  -->
 	      <!--
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="span10 col-md-offset-1 cf-div">
 	          <h2>ログイン</h2>
 	          <p>ログインしてセションIDを取得します。</p>
 
@@ -61,7 +61,7 @@
 
 	      <!-- 22222  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="col-md-10 col-md-offset-1 cf-div">
 	          <h2>WebSocket通信開始</h2>
 	          <p>WebSocket通信開始</p>
 
@@ -77,7 +77,7 @@
 
 	      <!-- AddNode  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="col-md-10 col-md-offset-1 cf-div">
 	          <h2>AddNode</h2>
 	          <p>AddNode</p>
 
@@ -117,7 +117,7 @@
 
 	              <div class="form-actions">
 	                <button type="submit" class="btn btn-primary">送信</button>
-	                <button type="reset" class="btn">キャンセル</button>
+	                <button type="reset" class="btn btn-default">キャンセル</button>
 	              </div>
 	            </fieldset>
 	          </form>
@@ -131,7 +131,7 @@
 
 	      <!-- RemoveNode  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="col-md-10 col-md-offset-1 cf-div">
 	          <h2>RemoveNode</h2>
 	          <p>RemoveNode</p>
 
@@ -163,7 +163,7 @@
 
 	              <div class="form-actions">
 	                <button type="submit" class="btn btn-primary">送信</button>
-	                <button type="reset" class="btn">キャンセル</button>
+	                <button type="reset" class="btn btn-default">キャンセル</button>
 	              </div>
 	            </fieldset>
 	          </form>
@@ -177,7 +177,7 @@
 
 	      <!-- SetGood  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="col-md-10 col-md-offset-1 cf-div">
 	          <h2>SetGood</h2>
 	          <p>SetGood</p>
 
@@ -220,7 +220,7 @@
 
 	              <div class="form-actions">
 	                <button type="submit" class="btn btn-primary">送信</button>
-	                <button type="reset" class="btn">キャンセル</button>
+	                <button type="reset" class="btn btn-default">キャンセル</button>
 	              </div>
 	            </fieldset>
 	          </form>
@@ -234,7 +234,7 @@
 
 	      <!-- SelectProject  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="col-md-10 col-md-offset-1 cf-div">
 	          <h2>SelectProject</h2>
 	          <p>SelectProject</p>
 
@@ -266,7 +266,7 @@
 
 	              <div class="form-actions">
 	                <button type="submit" class="btn btn-primary">送信</button>
-	                <button type="reset" class="btn">キャンセル</button>
+	                <button type="reset" class="btn btn-default">キャンセル</button>
 	              </div>
 	            </fieldset>
 	          </form>
@@ -280,7 +280,7 @@
 
 	      <!-- Login  -->
 	      <div class="row">
-	        <div class="span10 offset1 cf-div">
+	        <div class="col-md-10 col-md-offset-1 cf-div">
 	          <h2>Login</h2>
 	          <p>Login</p>
 
@@ -320,7 +320,7 @@
 
 	              <div class="form-actions">
 	                <button type="submit" class="btn btn-primary">送信</button>
-	                <button type="reset" class="btn">キャンセル</button>
+	                <button type="reset" class="btn btn-default">キャンセル</button>
 	              </div>
 	            </fieldset>
 	          </form>

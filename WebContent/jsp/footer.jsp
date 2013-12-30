@@ -10,7 +10,7 @@
     <hr>
 
     <footer>
-       <p>&copy; CHiKARA 2013</p>
+       <p>&copy; chikara, syun, ryusuke 2013</p>
     </footer>
 
 
@@ -20,7 +20,8 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <!--<script src="../assets/js/jquery.js"></script>-->
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap3/js/bootstrap.min.js"></script>
+    <script src="bootstrap3/js/holder.js"></script>
 
 
     <script type="text/javascript">
