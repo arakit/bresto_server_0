@@ -3,6 +3,7 @@ package jp.crudefox.server.bresto.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +21,12 @@ public class DBkeywordsTable {
 	static public class KeywordsRow{
 		public int kid;
 		public String keyword;
-		
+
 		public int x;
 		public int y;
 		public int w;
 		public int h;
-		
+
 		public String project_id;
 	}
 
@@ -34,6 +35,18 @@ public class DBkeywordsTable {
 
 	public DBkeywordsTable (Connection cn){
 		mConnection = cn;
+	}
+
+	private KeywordsRow getFromRow(ResultSet rs) throws SQLException{
+		KeywordsRow row = new KeywordsRow();
+    	row.kid = rs.getInt(COL_ID);
+    	row.keyword = rs.getString(COL_KEYWORD);
+    	row.project_id = rs.getString(COL_PROJECT_ID);
+    	row.x = 0;
+    	row.y = 0;
+    	row.w = 100;
+    	row.h = 100;
+		return row;
 	}
 
 	public KeywordsRow getById(String project_id,int id){
@@ -58,10 +71,7 @@ public class DBkeywordsTable {
 	        //int cnum = rm.getColumnCount();
 	        if(rs.first()){
 	        	KeywordsRow row;
-	        	row = new KeywordsRow();
-	        	row.kid = rs.getInt(COL_ID);
-	        	row.keyword = rs.getString(COL_KEYWORD);
-	        	row.project_id = rs.getString(COL_PROJECT_ID);
+	        	row = getFromRow(rs);
 	        	result = row;
 	        }
 
@@ -102,10 +112,7 @@ public class DBkeywordsTable {
 
 	        while(rs.next()){
 	        	KeywordsRow row;
-	        	row = new KeywordsRow();
-	        	row.kid = rs.getInt(COL_ID);
-	        	row.keyword = rs.getString(COL_KEYWORD);
-	        	row.project_id = rs.getString(COL_PROJECT_ID);
+	        	row = getFromRow(rs);
 	        	list.add(row);
 	        }
 

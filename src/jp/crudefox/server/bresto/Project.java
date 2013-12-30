@@ -15,13 +15,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.http.HttpServletRequest;
 
+import jp.crudefox.server.bresto.db.DBGoodTable;
+import jp.crudefox.server.bresto.db.DBGoodTable.GoodRow;
 import jp.crudefox.server.bresto.db.DBKeywordsRelationTable;
 import jp.crudefox.server.bresto.db.DBKeywordsRelationTable.KeywordsRelationRow;
 import jp.crudefox.server.bresto.db.DBkeywordsTable;
 import jp.crudefox.server.bresto.db.DBkeywordsTable.KeywordsRow;
-import jp.crudefox.server.bresto.servlet.Suggest;
-import jp.crudefox.server.bresto.servlet.Suggest.Sug;
+import jp.crudefox.server.bresto.servlet.api.Suggest;
+import jp.crudefox.server.bresto.servlet.api.Suggest.Sug;
 import jp.crudefox.server.bresto.util.CFUtil;
+import jp.swkoubou.bresto.graph.Edge;
+import jp.swkoubou.bresto.graph.Node;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.StreamInbound;
@@ -52,8 +56,12 @@ public class Project{
 	private class MyMessageInbound extends MessageInbound{
 		WsOutbound mmOutB;
 
-		ArrayList<KeywordsRow> mmAddKeyword = new ArrayList<KeywordsRow>();
-		ArrayList<KeywordsRelationRow> mmAddEdge = new ArrayList<KeywordsRelationRow>();
+		Date mOpenDate;
+
+		ArrayList<Node> mmAddKeyword = new ArrayList<Node>();
+		ArrayList<Edge> mmAddEdge = new ArrayList<Edge>();
+
+		ArrayList<Edge> mmAddGood = new ArrayList<Edge>();
 
 		ArrayList<SugTasked> mmAddSug = new ArrayList<SugTasked>();
 
@@ -63,39 +71,40 @@ public class Project{
 			try {
 				System.out.println("Open Client.");
 				this.mmOutB = out;
+				this.mOpenDate = new Date();
 				synchronized (mList) {
 					mList.add(MyMessageInbound.this);
 				}
 
 				//node
-				List<KeywordsRow> kws = new ArrayList<KeywordsRow>();
+				List<Node> kws = new ArrayList<Node>();
 				synchronized (mNodes) {
-					for(Entry<Integer, KeywordsRow> e : mNodes.entrySet()){
+					for(Entry<Integer, Node> e : mNodes.entrySet()){
 						kws.add(e.getValue());
 					}
 				}
-				addNode(kws);
+				MyMessageInbound.this.addNode(kws);
 
 				//edge
-				List<KeywordsRelationRow> krs = new ArrayList<KeywordsRelationRow>();
+				List<Edge> krs = new ArrayList<Edge>();
 				synchronized (mEdges) {
-					for(KeywordsRelationRow e : mEdges){
+					for(Edge e : mEdges){
 						krs.add(e);
 					}
 				}
-				addEdge(krs);
+				MyMessageInbound.this.addEdge(krs);
 
 				//sug
 				List<SugTasked> sgs = new ArrayList<Project.SugTasked>();
 				synchronized (mSuggests) {
 					for(Entry<Integer, List<Sug>> e : mSuggests.entrySet()){
 						 SugTasked sg = new SugTasked();
-						 sg.kr = mNodes.get(e.getValue());
+						 sg.kr = mNodes.get(e.getKey());
 						 sg.sugs = e.getValue();
 						 sgs.add(sg);
 					}
 				}
-				addSug(sgs);
+				MyMessageInbound.this.addSug(sgs);
 
 				if(mMainThread!=null){
 					mMainThread.go();
@@ -155,7 +164,7 @@ public class Project{
 		public void execNodeEdge(){
 
 			//送信用の保留データを取得
-			ArrayList<KeywordsRow> kws = new ArrayList<KeywordsRow>();
+			ArrayList<Node> kws = new ArrayList<Node>();
 			synchronized (mmAddKeyword) {
 				for(int i=0;i<mmAddKeyword.size();i++){
 					kws.add(mmAddKeyword.get(i));
@@ -163,7 +172,7 @@ public class Project{
 				mmAddKeyword.clear();
 			}
 			//送信用の保留データを取得
-			ArrayList<KeywordsRelationRow> krs = new ArrayList<KeywordsRelationRow>();
+			ArrayList<Edge> krs = new ArrayList<Edge>();
 			synchronized (mmAddEdge) {
 				for(int i=0;i<mmAddEdge.size();i++){
 					krs.add(mmAddEdge.get(i));
@@ -216,6 +225,7 @@ public class Project{
 
 		public void addSug(List<SugTasked> sug){
 			if(sug!=null){
+				System.out.println("sug "+sug.size()+" ");
 				synchronized (mmAddSug) {
 					for(SugTasked e : sug){
 						mmAddSug.add(e);
@@ -223,33 +233,63 @@ public class Project{
 				}
 			}
 		}
-		public void addNode(List<KeywordsRow> nodes){
+		public void addNode(List<Node> nodes){
 			if(nodes!=null){
 				synchronized (mmAddKeyword) {
-					for(KeywordsRow e : nodes){
+					for(Node e : nodes){
 						mmAddKeyword.add(e);
 					}
 				}
 			}
 		}
-		public void addEdge(List<KeywordsRelationRow> edges){
+		public void addEdge(List<Edge> edges){
 			if(edges!=null){
 				synchronized (mmAddEdge) {
-					for(KeywordsRelationRow e : edges){
+					for(Edge e : edges){
 						mmAddEdge.add(e);
 					}
 				}
 			}
 		}
 
+
+
+		public String getStateString(){
+			StringBuilder sb = new StringBuilder();
+//			ArrayList<MyMessageInbound> list = new ArrayList<MyMessageInbound>();
+//			synchronized (mList) {
+//				for(int i=0;i<mList.size();i++) list.add( mList.get(i) );
+//			}
+//			for(int i=0;i<list.size();i++){
+//				MyMessageInbound mi = list.get(i);
+//
+//			}
+			if(mOpenDate!=null) sb.append(mOpenDate.toString());
+			else sb.append("opening");
+			return sb.toString();
+		}
+	}
+
+	public String getAccessStateString(){
+		StringBuilder sb = new StringBuilder();
+		ArrayList<MyMessageInbound> list = new ArrayList<MyMessageInbound>();
+		synchronized (mList) {
+			for(int i=0;i<mList.size();i++) list.add( mList.get(i) );
+		}
+		for(int i=0;i<list.size();i++){
+			MyMessageInbound mi = list.get(i);
+			sb.append(mi.getStateString());
+			sb.append(", ");
+		}
+		return sb.toString();
 	}
 
 
-	private HashMap<Integer, KeywordsRow> mNodes = new LinkedHashMap<Integer, KeywordsRow>();
-	private ArrayList<KeywordsRelationRow> mEdges = new ArrayList<KeywordsRelationRow>();
+	private HashMap<Integer, Node> mNodes = new LinkedHashMap<Integer, Node>();
+	private ArrayList<Edge> mEdges = new ArrayList<Edge>();
 	private HashMap<Integer, List<Sug>> mSuggests = new LinkedHashMap<Integer, List<Sug>>();
 
-	private ConcurrentLinkedQueue<KeywordsRow> mSuggestTaskQue = new ConcurrentLinkedQueue<KeywordsRow>();
+	private ConcurrentLinkedQueue<Node> mSuggestTaskQue = new ConcurrentLinkedQueue<Node>();
 
 	private void loadFromDB(String project_id){
 
@@ -280,33 +320,45 @@ public class Project{
 
 			DBkeywordsTable k_tb = new DBkeywordsTable(cn);
 			DBKeywordsRelationTable r_tb = new DBKeywordsRelationTable(cn);
+			DBGoodTable g_tb = new DBGoodTable(cn);
 
 			List<KeywordsRow> k_rows;
 			List<KeywordsRelationRow> r_rows;
+
+			List<Node> node_rows = new ArrayList<Node>();
+			List<Edge> edge_rows = new ArrayList<Edge>();
+
 
 			k_rows = k_tb.getByProjectId(project_id);
 			r_rows = r_tb.getByProjectId(project_id);
 
 			for(int i=0;i<k_rows.size();i++){
 				KeywordsRow e = k_rows.get(i);
-				e.w = 100;
-				e.h = 100;
-				mNodes.put(e.kid, e);
+
+				List<GoodRow> g_rows;
+				g_rows = g_tb.getByKId(project_id, e.kid);
+
+				Node node = Const.toNode(e, g_rows.size());
+				node_rows.add(node);
+				mNodes.put(e.kid, node);
+				mSuggestTaskQue.add(node);
 			}
 
 			for(int i=0;i<r_rows.size();i++){
 				KeywordsRelationRow e = r_rows.get(i);
-				mEdges.add( e );
+				Edge edge = Const.toEdge(e);
+				edge_rows.add(edge);
+				mEdges.add( edge );
 			}
 
-			for(int i=0;i<k_rows.size();i++){
-				KeywordsRow e = k_rows.get(i);
-				mSuggestTaskQue.add(e);
-			}
+//			for(int i=0;i<k_rows.size();i++){
+//				KeywordsRelationRow e = k_rows.get(i);
+//
+//			}
 
 			if(mMainThread!=null){
-				mMainThread.addNode(k_rows, false);
-				mMainThread.addEdge(r_rows, false);
+				mMainThread.addNode(node_rows, false);
+				mMainThread.addEdge(edge_rows, false);
 			}
 
 
@@ -330,36 +382,19 @@ public class Project{
 	 * JSONファイル作成
 	 */
 
-	private String makeJson(ArrayList<KeywordsRow> kws, ArrayList<KeywordsRelationRow> krs){
+	private String makeJson(ArrayList<Node> kws, ArrayList<Edge> krs){
 
 		try{
-			//データベースへの接続
-			//Connection cn = Const.getDefaultDBConnection();
-
-			//	         DBSessionTable db_st = new DBSessionTable(cn);
-			//	         SessionRow sr = db_st.getBySessionID(sid);
-			//
-			//	         if(sr==null){
-			//	        	 cn.close();
-			//	        	 throw new Exception("not login.");
-			//	         }
-
-			//			if(project_id == null) project_id = "LPWKfLCkJborUPAggfNIcWtfPPERzAlR";
-
-
-			//DBProjectTable db_pro = new DBProjectTable(cn);
-			//ProjectRow pr = db_pro.getById(project_id);
-			//if(pr==null) throw new Exception("not exist project.");
 
 
 			//DBkeywordsTable db_k = new DBkeywordsTable(cn);
-			//List<KeywordsRow> klist = db_k.getByProjectId(project_id);
-			List<KeywordsRow> klist = new ArrayList<KeywordsRow>();
-			List<KeywordsRelationRow> kr_list = new ArrayList<KeywordsRelationRow>();
-//			KeywordsRow r;
+			//List<Node> klist = db_k.getByProjectId(project_id);
+			List<Node> klist = new ArrayList<Node>();
+			List<Edge> kr_list = new ArrayList<Edge>();
+//			Node r;
 
 			for(int i=0;i<kws.size();i++){
-//				r = new KeywordsRow();
+//				r = new Node();
 //				r.kid = ;
 //				r.keyword = "Windows";
 //				r.project_id = "aaaa";
@@ -384,25 +419,26 @@ public class Project{
 			ArrayList<LinkedHashMap<String, Object>> b_edge = new ArrayList<LinkedHashMap<String,Object>>();
 
 			for(int i=0;i<klist.size();i++){
-				KeywordsRow kr = klist.get(i);
+				Node kr = klist.get(i);
 
 				LinkedHashMap<String, Object> bi = new LinkedHashMap<String, Object>();
-				bi.put("kid", Integer.valueOf(kr.kid) );
+				bi.put("kid", Integer.valueOf(kr.id) );
 				bi.put("keyword", kr.keyword);
 				bi.put("x", Integer.valueOf(kr.x) );
 				bi.put("y", Integer.valueOf(kr.y) );
-				bi.put("w", Integer.valueOf(kr.w) );
-				bi.put("h", Integer.valueOf(kr.h) );
+				bi.put("w", Integer.valueOf(kr.scale_x) );
+				bi.put("h", Integer.valueOf(kr.scale_y) );
+				bi.put("good", Integer.valueOf(kr.like) );
 
-				b_node.put(""+kr.kid, bi);
+				b_node.put(""+kr.id, bi);
 			}
 
 			for(int i=0;i<kr_list.size();i++){
-				KeywordsRelationRow kr = kr_list.get(i);
+				Edge kr = kr_list.get(i);
 
 				LinkedHashMap<String, Object> bi = new LinkedHashMap<String, Object>();
-				bi.put("from_kid",Integer.valueOf(kr.kid1) );
-				bi.put("to_kid", Integer.valueOf(kr.kid2) );
+				bi.put("from_kid",Integer.valueOf(kr.pid) );
+				bi.put("to_kid", Integer.valueOf(kr.cid) );
 
 				b_edge.add(bi);
 			}
@@ -446,7 +482,7 @@ public class Project{
 	 * JSONファイル作成
 	 */
 
-	private String makeSuggestJson(KeywordsRow kr, List<Sug> sugs){
+	private String makeSuggestJson(Node kr, List<Sug> sugs){
 
 		try{
 
@@ -472,7 +508,7 @@ public class Project{
 
 			Date now = new Date();
 
-			b_data.put("kid", Integer.valueOf(kr.kid) );
+			b_data.put("kid", Integer.valueOf(kr.id) );
 			b_data.put("keyword", ""+kr.keyword);
 			b_data.put("suggest", b_suggest);
 
@@ -500,77 +536,108 @@ public class Project{
 
 
 
-	public void addNodeAndEdge(KeywordsRow kw, KeywordsRelationRow kr){
+	//ノードとエッジを追加して送信。検索タスクも追加、
+	public void addNodeAndEdge(Node kw, Edge kr){
 		if(mMainThread==null) return ;
-		//mMainThread.addNode(kw, false);
-		//mMainThread.addEdge(kr, true);
-	}
+		ArrayList<Node> ks = new ArrayList<Node>();
+		ArrayList<Edge> rs = new ArrayList<Edge>();
 
-	public void addNode(KeywordsRow kw){
-		if(mMainThread==null) return ;
-		//mMainThread.addNode(kw, true);
-	}
+		if(kw!=null){
+			ks.add(kw);
+			mNodes.put(kw.id, kw);
+		}
+		if(kr!=null){
+			rs.add(kr);
+			mEdges.add(kr);
+		}
 
-	public void addEdge(KeywordsRelationRow kr){
-		if(mMainThread==null) return ;
-		//mMainThread.addEdge(kr, true);
-	}
+		//ノードとエッジ追加
+		mMainThread.addNode(ks, false);
+		mMainThread.addEdge(rs, false);
+		mMainThread.go();
 
-
-
-	private void sample2(){
-
-		String[] arr = new String[]{
-				"Windows",
-				"Linux",
-				"りんご",
-				"ごりら",
-				"ラッパ",
-				"ぱんつ",
-				"積み木",
-				"きつね",
-				"たぬきうどん"
-		};
-
-		ArrayList<KeywordsRow> node = new ArrayList<KeywordsRow>();
-		ArrayList<KeywordsRelationRow> edge = new ArrayList<KeywordsRelationRow>();
-
-		for(int i=0;i<arr.length;i++){
-			KeywordsRow kr = new KeywordsRow();
-			kr.kid = 1000 + i;//(int)( Math.random() * Integer.MAX_VALUE );
-			kr. keyword = arr[i];
-			kr.w = 100;
-			kr.h = 100;
-			kr.x = (int)( Math.random() * 400);
-			kr.y = (int)( Math.random() * 400);
-			node.add(kr);
-
-			if(i!=0){
-				KeywordsRelationRow krr = new KeywordsRelationRow();
-				krr.kid1 = node.get(i-1).kid;
-				krr.kid2 = kr.kid;
-				krr.modified_time = new Date();
-				krr.project_id = "p1";
-				edge.add(krr);
+		//サジェストの検索タスク追加
+		if(kw!=null){
+			boolean hask;
+			synchronized (mSuggests) {
+				hask = mSuggests.containsKey(kw.id);
+			}
+			if(!hask){
+				mSuggestTaskQue.add(kw);
+				if(mSujjestThread!=null){
+					mSujjestThread.go();
+				}
 			}
 		}
 
-
-		if(mMainThread!=null){
-			mMainThread.addNode(node, false);
-			mMainThread.addEdge(edge, false);
-			mMainThread.go();
-		}
 	}
+
+
+//	public void addNode(Node kw){
+//		if(mMainThread==null) return ;
+//		//mMainThread.addNode(kw, true);
+//	}
+//
+//	public void addEdge(Edge kr){
+//		if(mMainThread==null) return ;
+//		//mMainThread.addEdge(kr, true);
+//	}
+
+
+
+//	private void sample2(){
+//
+//		String[] arr = new String[]{
+//				"Windows",
+//				"Linux",
+//				"りんご",
+//				"ごりら",
+//				"ラッパ",
+//				"ぱんつ",
+//				"積み木",
+//				"きつね",
+//				"たぬきうどん"
+//		};
+//
+//		ArrayList<Node> node = new ArrayList<Node>();
+//		ArrayList<Edge> edge = new ArrayList<Edge>();
+//
+//		for(int i=0;i<arr.length;i++){
+//			Node kr = new Node();
+//			kr.kid = 1000 + i;//(int)( Math.random() * Integer.MAX_VALUE );
+//			kr. keyword = arr[i];
+//			kr.w = 100;
+//			kr.h = 100;
+//			kr.x = (int)( Math.random() * 400);
+//			kr.y = (int)( Math.random() * 400);
+//			node.add(kr);
+//
+//			if(i!=0){
+//				Edge krr = new Edge();
+//				krr.kid1 = node.get(i-1).kid;
+//				krr.kid2 = kr.kid;
+//				krr.modified_time = new Date();
+//				krr.project_id = "p1";
+//				edge.add(krr);
+//			}
+//		}
+//
+//
+//		if(mMainThread!=null){
+//			mMainThread.addNode(node, false);
+//			mMainThread.addEdge(edge, false);
+//			mMainThread.go();
+//		}
+//	}
 
 
 	private void moveNodesSamples(){
 
-		List<KeywordsRow> krs = new ArrayList<DBkeywordsTable.KeywordsRow>();
+		List<Node> krs = new ArrayList<Node>();
 		synchronized (mNodes) {
-			for(KeywordsRow kr : mNodes.values()){
-				kr.w = 100;
-				kr.h = 100;
+			for(Node kr : mNodes.values()){
+				kr.scale_x = 100;
+				kr.scale_y = 100;
 				kr.x = (int)( Math.random() * 400);
 				kr.y = (int)( Math.random() * 400);
 				krs.add(kr);
@@ -584,18 +651,19 @@ public class Project{
 	}
 
 	private static class SugTasked{
-		KeywordsRow kr;
+		Node kr;
 		List<Sug> sugs;
 	}
 
 
-	//private ConcurrentLinkedQueue<KeywordsRow> mSuggestTaskQue = new ConcurrentLinkedQueue<KeywordsRow>();
+
+	//private ConcurrentLinkedQueue<Node> mSuggestTaskQue = new ConcurrentLinkedQueue<Node>();
 
 	//サジェストタスク消費
-	private void execSuggest(ArrayList<KeywordsRow> krs){
+	private void execSuggest(ArrayList<Node> krs){
 
 		for(int i=0;i<krs.size();i++){
-			KeywordsRow kr = krs.get(i);
+			Node kr = krs.get(i);
 			List<Sug> sugres;
 			//SugTasked st = new SugTasked();
 			 try {
@@ -608,7 +676,7 @@ public class Project{
 
 
 			synchronized (mSuggests) {
-				mSuggests.put(kr.kid, sugres);
+				mSuggests.put(kr.id, sugres);
 			}
 
 			SugTasked st = new SugTasked();
@@ -688,10 +756,24 @@ public class Project{
 		public void run() {
 			super.run();
 
+			long start_time = System.currentTimeMillis();
+			long before_move_time = 0;
 			int roop_count = 0;
+
 			while(!mmIsCanceld){
 
+
 				System.out.println("roop_count = "+roop_count);
+
+				long now_time = System.currentTimeMillis();
+				long passed_time = now_time - start_time;
+
+				try {
+					String str = getAccessStateString();
+					System.out.println(str);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				if(roop_count==0){
 
@@ -700,7 +782,10 @@ public class Project{
 				}
 
 
-				moveNodesSamples();
+				if(now_time-before_move_time>=5*1000){
+					moveNodesSamples();
+					before_move_time = now_time;
+				}
 
 
 				//送信
@@ -725,14 +810,17 @@ public class Project{
 
 
 
+
 				//sleep
-				//System.out.println("sleep start");
-				try {
-					sleep(1000*5);
-				} catch (Exception e) {
-					System.out.println("sleep interrput");
+				if(!Thread.interrupted()){
+					//System.out.println("sleep start");
+					try {
+						sleep(1000*1);
+					} catch (Exception e) {
+						System.out.println("sleep interrput");
+					}
+					//System.out.println("sleep end");
 				}
-				//System.out.println("sleep end");
 
 				roop_count++;
 
@@ -743,13 +831,13 @@ public class Project{
 		}
 
 		public void go(){
-			if( MainThread.this.isInterrupted() ){
+			if( !MainThread.this.isInterrupted() ){
 				MainThread.this.interrupt();
 			}
 		}
 
 
-		public void addNode(List<KeywordsRow> kw, boolean interput){
+		public void addNode(List<Node> kw, boolean interput){
 			if(kw!=null){
 				ArrayList<MyMessageInbound> list = new ArrayList<Project.MyMessageInbound>();
 				synchronized (mList) {
@@ -762,7 +850,7 @@ public class Project{
 			}
 			if(interput) go();
 		}
-		public void addEdge(List<KeywordsRelationRow> kr, boolean interput){
+		public void addEdge(List<Edge> kr, boolean interput){
 			if(kr!=null){
 				ArrayList<MyMessageInbound> list = new ArrayList<Project.MyMessageInbound>();
 				synchronized (mList) {
@@ -817,14 +905,14 @@ public class Project{
 			int roop_count = 0;
 			while(!mmIsCanceld){
 
-				System.out.println("sujest roop_count = "+roop_count);
+				System.out.println("suggest roop_count = "+roop_count);
 
 
 
 				//送信用の保留データを取得
 //				{
-//					ArrayList<KeywordsRow> sks = new ArrayList<KeywordsRow>();
-//					KeywordsRow skr;
+//					ArrayList<Node> sks = new ArrayList<Node>();
+//					Node skr;
 //					for(int i=0;i<2;i++){
 //						skr = mSuggestTaskQue.poll();
 //						if(skr!=null){
@@ -837,33 +925,40 @@ public class Project{
 //					}
 //				}
 
-				KeywordsRow sk = mSuggestTaskQue.poll();
+				{
 
-				if(sk!=null){
-					ArrayList<KeywordsRow> sks = new ArrayList<KeywordsRow>();
-					sks.add(sk);
-					execSuggest(sks);
+					Node sk = mSuggestTaskQue.poll();
+					while(sk!=null){
+						if(sk!=null){
+							ArrayList<Node> sks = new ArrayList<Node>();
+							sks.add(sk);
+							execSuggest(sks);
+						}
+						sk = mSuggestTaskQue.poll();
+					}
 				}
 
 				//sleep
-				//System.out.println("sleep start");
-				try {
-					sleep(1000*1);
-				} catch (Exception e) {
-					//System.out.println("sleep interrput");
+				if(!Thread.interrupted()){
+					//System.out.println("sleep start");
+					try {
+						sleep(1000*10);
+					} catch (Exception e) {
+						//System.out.println("sleep interrput");
+					}
+					//System.out.println("sleep end");
 				}
-				//System.out.println("sleep end");
 
 				roop_count++;
 
 			}
 
-			System.out.println("end sujest thread.");
+			System.out.println("end suggest thread.");
 
 		}
 
 		public void go(){
-			if( SujjestThread.this.isInterrupted() ){
+			if( !SujjestThread.this.isInterrupted() ){
 				SujjestThread.this.interrupt();
 			}
 		}
@@ -920,9 +1015,9 @@ public class Project{
 	 */
 
 
-	public void init(){
+	public void init(String project_id){
 		System.out.println("init()");
-		loadFromDB("p1");
+		loadFromDB(project_id);
 		startMainThread();
 		startSujjestThread();
 	}

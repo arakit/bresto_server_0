@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>ぶれすと！</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="crudefox/css/crudefox.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-switch.css" />
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+    -->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">ぶれすと！</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="index.html">ホーム</a></li>
+              <li><a href="about.html">Abount</a></li>
+              <li class="active"><a href="api.html">API</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">その他 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">menu1</a></li>
+                  <li class="divider"></li>
+                  <li class="nav-header">menu2</li>
+                  <li><a href="#">menu2-1</a></li>
+                </ul>
+              </li>
+            </ul>
+            <!--
+            <form class="navbar-form pull-right">
+              <input class="span2" type="text" placeholder="Email">
+              <input class="span2" type="password" placeholder="Password">
+              <button type="submit" class="btn">Sign in</button>
+            </form>
+            -->
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h1>BreSto API Version 0.1</h1>
+        <p>APIのテストページ</p>
+      </div>
+
+      <!-- Example row of columns -->
+
+	      <!-- API ログイン  -->
+	      <!--
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>ログイン</h2>
+	          <p>ログインしてセションIDを取得します。</p>
+
+	          <h3>URL</h3>
+	          <p>/Login</p>
+
+	          <h3>パラメータ</h3>
+	          <table class="table table-striped table-bordered table-hover">
+	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
+	          	<tbody>
+	              <tr>
+	                <td>user_id</td>
+	                <td>ユーザのID,半角英数字</td>
+	              </tr>
+	            </tbody>
+	          </table>
+
+	          <h3>リクエストサンプル</h3>
+	          <table  class="table table-striped table-bordered table-hover">
+	          <tbody>
+	              <tr>
+	                <td>GET</td>
+	                <td><code>http://192.168.1.107:8080/TunaCanServer0/Login?user_id=user0&user_pass=0000</code></td>
+	              </tr>
+	            </tbody>
+	          </table>
+	          <pre>
+{
+  "result":"OK",
+  "user_id":"user0",
+  "user_name":"ユーザー0",
+  "sid":"fzGvJQXIiSdVIIFikUdsILKVANcfyVDM"
+}
+	          </pre>
+	        </div>
+	      </div>
+	      -->
+          <!-- api -->
+
+          </br>
+
+	      <!-- 22222  -->
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>WebSocket通信開始</h2>
+	          <p>WebSocket通信開始</p>
+
+	          <button type="submit" class="btn btn-primary" onclick='onTest001Click()'>さぁ！</button>
+
+
+	        </div>
+	      </div>
+
+          <!--  -->
+
+          <br>
+
+	      <!-- AddNode  -->
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>AddNode</h2>
+	          <p>AddNode</p>
+
+	          <h3>パラメータ</h3>
+	          <table class="table table-striped table-bordered table-hover">
+	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
+	          	<tbody>
+	              <tr>
+	                <td>keyword</td>
+	                <td>キーワード</td>
+	              </tr>
+	            </tbody>
+	          </table>
+
+
+
+		      <!-- enctype="multipart/form-data" -->
+	          <form class="form-horizontal well" method="post" action="api/add_node"  enctype="multipart/form-data" >
+	            <fieldset>
+	              <legend>AddNode</legend>
+
+	              <div class="control-group">
+	                <label class="control-label" for="keyword">keyword</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="keyword" name="keyword" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="control-group">
+	                <label class="control-label" for="parent_kid">parent_kid</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="parent_kid" name="parent_kid" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="form-actions">
+	                <button type="submit" class="btn btn-primary">送信</button>
+	                <button type="reset" class="btn">キャンセル</button>
+	              </div>
+	            </fieldset>
+	          </form>
+
+	        </div>
+	      </div>
+
+          <!-- AddNode -->
+
+	      <!-- RemoveNode  -->
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>RemoveNode</h2>
+	          <p>RemoveNode</p>
+
+	          <h3>パラメータ</h3>
+	          <table class="table table-striped table-bordered table-hover">
+	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
+	          	<tbody>
+	              <tr>
+	                <td>kid</td>
+	                <td>キーワードID</td>
+	              </tr>
+	            </tbody>
+	          </table>
+
+
+
+		      <!-- enctype="multipart/form-data" -->
+	          <form class="form-horizontal well" method="post" action="api/remove_node"  enctype="multipart/form-data" >
+	            <fieldset>
+	              <legend>RemoveNode</legend>
+
+	              <div class="control-group">
+	                <label class="control-label" for="kid">kid</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="kid" name="kid" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="form-actions">
+	                <button type="submit" class="btn btn-primary">送信</button>
+	                <button type="reset" class="btn">キャンセル</button>
+	              </div>
+	            </fieldset>
+	          </form>
+
+	        </div>
+	      </div>
+
+          <!-- RemoveNode -->
+
+	      <!-- SetGood  -->
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>SetGood</h2>
+	          <p>SetGood</p>
+
+	          <h3>パラメータ</h3>
+	          <table class="table table-striped table-bordered table-hover">
+	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
+	          	<tbody>
+	              <tr>
+	                <td>kid</td>
+	                <td>キーワードID</td>
+	              </tr>
+	            </tbody>
+	          </table>
+
+
+
+		      <!-- enctype="multipart/form-data" -->
+	          <form class="form-horizontal well" method="post" action="api/set_good"  enctype="multipart/form-data" >
+	            <fieldset>
+	              <legend>SetGood</legend>
+
+	              <div class="control-group">
+	                <label class="control-label" for="kid">kid</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="kid" name="kid" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="control-group">
+	                <label class="control-label" for="value">value</label>
+	                <div class="controls">
+	                  <select id="value" name="value">
+	                    <option value="true">true</option>
+	                    <option value="false">false</option>
+	                  </select>
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="form-actions">
+	                <button type="submit" class="btn btn-primary">送信</button>
+	                <button type="reset" class="btn">キャンセル</button>
+	              </div>
+	            </fieldset>
+	          </form>
+
+	        </div>
+	      </div>
+
+          <!-- SetGood -->
+
+	      <!-- SelectProject  -->
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>SelectProject</h2>
+	          <p>SelectProject</p>
+
+	          <h3>パラメータ</h3>
+	          <table class="table table-striped table-bordered table-hover">
+	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
+	          	<tbody>
+	              <tr>
+	                <td>project_id</td>
+	                <td>プロジェクトID</td>
+	              </tr>
+	            </tbody>
+	          </table>
+
+
+
+		      <!-- enctype="multipart/form-data" -->
+	          <form class="form-horizontal well" method="post" action="api/select_project"  enctype="multipart/form-data" >
+	            <fieldset>
+	              <legend>SelectProject</legend>
+
+	              <div class="control-group">
+	                <label class="control-label" for="project_id">project_id</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="project_id" name="project_id" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="form-actions">
+	                <button type="submit" class="btn btn-primary">送信</button>
+	                <button type="reset" class="btn">キャンセル</button>
+	              </div>
+	            </fieldset>
+	          </form>
+
+	        </div>
+	      </div>
+
+          <!-- SelectProject -->
+
+
+	      <!-- Login  -->
+	      <div class="row">
+	        <div class="span10 offset1 cf-div">
+	          <h2>Login</h2>
+	          <p>Login</p>
+
+	          <h3>パラメータ</h3>
+	          <table class="table table-striped table-bordered table-hover">
+	          	<thead><tr><th>名前</th><th>説明</th></tr></thead>
+	          	<tbody>
+	              <tr>
+	                <td>user_id</td>
+	                <td>ユーザーID</td>
+	              </tr>
+	            </tbody>
+	          </table>
+
+
+
+		      <!-- enctype="multipart/form-data" -->
+	          <form class="form-horizontal well" method="post" action="api/login"  enctype="multipart/form-data" >
+	            <fieldset>
+	              <legend>Login</legend>
+
+	              <div class="control-group">
+	                <label class="control-label" for="user_id">user_id</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="user_id" name="user_id" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="control-group">
+	                <label class="control-label" for="user_password">user_password</label>
+	                <div class="controls">
+	                  <input type="text" class="input-xlarge" id="user_password" name="user_password" >
+	                  <p class="help-block"></p>
+	                </div>
+	              </div>
+
+	              <div class="form-actions">
+	                <button type="submit" class="btn btn-primary">送信</button>
+	                <button type="reset" class="btn">キャンセル</button>
+	              </div>
+	            </fieldset>
+	          </form>
+
+	        </div>
+	      </div>
+
+          <!-- Login -->
+
+
+
+	    </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; CHiKARA 2013</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <!--<script src="../assets/js/jquery.js"></script>-->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript">
+      function onTest001Click(s) {
+    	//$('#'+s).attr('checked', !$('#'+s).attr('checked') );
+
+    	  //var connection = new WebSocket('ws://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge');
+    	  var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge');
+
+    	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+
+    	  //var connection = new WebSocket('ws://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  //var connection = new WebSocket('wss://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  //var connection = new WebSocket('wss://192.168.1.146:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  //var connection = new WebSocket('ws://192.168.1.112:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+    	  //var connection = new WebSocket('ws://192.168.1.146:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
+
+
+  		// Log errors
+  		connection.onerror = function (error) {
+  		  console.log('WebSocket Error ' + error);
+  		};
+
+  		// Log messages from the server
+  		connection.onmessage = function (e) {
+  		  console.log('Server: ' + e.data);
+  		};
+
+    	connection.onopen = function () {
+    		 connection.send('Hello!'); // Send the message 'Ping' to the server
+    	};
+
+
+      }
+	</script>
+
+	<script type="text/javascript">
+
+
+
+	</script>
+
+
+
+  </body>
+</html>

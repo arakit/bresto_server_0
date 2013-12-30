@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,14 +35,18 @@ public class CFServletParams {
 
 
 
-	public CFServletParams(HttpServlet s, HttpServletRequest req, HttpServletResponse resp, File tmpdir) throws MimeTypeParseException{
-		String contentType = req.getContentType();
-		MimeType mimeType = contentType!=null ? new MimeType( contentType ) : null;
-		if(mimeType!=null && mimeType.match("multipart/form-data")){
-			initParamsFromMultiPartFormData(s, req, mimeType, tmpdir);
-		}else{
-			initParamsFromReqParam(s, req);
-		}
+	public CFServletParams(HttpServlet s, HttpServletRequest req, HttpServletResponse resp, File tmpdir){
+		try{
+			String contentType = req.getContentType();
+			MimeType mimeType = contentType!=null ? new MimeType( contentType ) : null;
+			if(mimeType!=null && mimeType.match("multipart/form-data")){
+				initParamsFromMultiPartFormData(s, req, mimeType, tmpdir);
+			}else{
+				initParamsFromReqParam(s, req);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
 	}
 
 	public void putAdd(String key,Object val){

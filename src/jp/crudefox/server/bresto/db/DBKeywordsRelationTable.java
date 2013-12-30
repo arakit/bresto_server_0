@@ -124,7 +124,7 @@ public class DBKeywordsRelationTable {
 	        PreparedStatement st = mConnection.prepareStatement(qry1);
 	        st.setInt(1, row.kid1);
 	        st.setInt(2, row.kid2);
-	        st.setString(3, CFUtil.toDateTimeString( row.modified_time ) );
+	        st.setString(3, row.modified_time!=null ? CFUtil.toDateTimeString( row.modified_time ) : null );
 	        st.setString(4, row.project_id);
 
 
@@ -139,6 +139,7 @@ public class DBKeywordsRelationTable {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("result = "+result);
 		}
 
 		return result;
