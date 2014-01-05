@@ -72,6 +72,10 @@ public class AddNode extends HttpServlet {
 
 	private void doProc(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
+		response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+		response.setHeader("Access-Control-Max-Age", "-1");
 
 
 		Connection cn = null;
@@ -103,6 +107,9 @@ public class AddNode extends HttpServlet {
 			project_id = (String) ses.getAttribute(Const.SES_PROJECT_ID);
 			user_id = (String) ses.getAttribute(Const.SES_USER_ID);
 
+//			project_id = "MyxLvXLIoYYLDurWxDqYPECZSZOwRXaN";
+//			user_id = "chikara";
+
 			if(TextUtil.isEmpty(project_id))  throw new Exception("not select project.");
 			if(TextUtil.isEmpty(user_id))  throw new Exception("not login.");
 
@@ -125,7 +132,7 @@ public class AddNode extends HttpServlet {
 	         kr.project_id = project_id;
 	         kr.keyword = keyword;
 	         kr.x = 0; kr.y = 0;
-	         kr.w = 100; kr.h = 100;
+	         kr.w = 20; kr.h = 20;
 	         kr = db_k.insertByAutoIncrement(kr);
 
 	         if(kr==null) throw new Exception("failed node insert.");
@@ -173,7 +180,7 @@ public class AddNode extends HttpServlet {
 //		         kwr_r.kid2 = kwr.kid;
 
 		         System.out.println("addNodeします.");
-		         nd.addNodeAndEdge(project_id, Const.toNode(kr, 0), Const.toEdge(krr));
+		         nd.addNodeAndEdge(project_id, Const.toNode(kr, 0), Const.toEdge(krr), false);
 		         System.out.println("addNodeしました。.");
 	         }
 
@@ -196,6 +203,7 @@ public class AddNode extends HttpServlet {
 	         b.put("data", b_data);
 
 	         String json = om.writeValueAsString(b);
+	         //json = "callback(" + json + ");";
 
 	         response.setStatus(HttpServletResponse.SC_OK);
 	         pw.write(json);
@@ -211,7 +219,7 @@ public class AddNode extends HttpServlet {
 	         b.put("info", e.getMessage() );
 
 	         String json = om.writeValueAsString(b);
-	         
+
 	         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	         pw.write(json);
 	     }

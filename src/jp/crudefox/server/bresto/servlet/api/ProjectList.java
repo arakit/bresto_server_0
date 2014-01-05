@@ -1,8 +1,10 @@
 package jp.crudefox.server.bresto.servlet.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,12 +15,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import jp.crudefox.server.bresto.Const;
 import jp.crudefox.server.bresto.db.DBProjectTable;
 import jp.crudefox.server.bresto.db.DBProjectTable.ProjectRow;
-import jp.crudefox.server.bresto.db.DBSessionTable;
-import jp.crudefox.server.bresto.db.DBSessionTable.SessionRow;
+import jp.crudefox.server.bresto.util.CFServletParams;
 import jp.crudefox.server.bresto.util.CFUtil;
 import jp.crudefox.server.bresto.util.TextUtil;
 
@@ -30,7 +32,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 @WebServlet(
 		description = "プロジェクトの一覧",
-		urlPatterns = { "/ProjectList" },
+		urlPatterns = { "/api/project_list" },
 		initParams = {
 				@WebInitParam(name = "sid", value = "")
 		})
@@ -68,82 +70,182 @@ public class ProjectList extends HttpServlet {
 
 	private void doProc(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+
+		Connection cn = null;
 		CFUtil.initMySQLDriver();
 
 		response.setContentType("application/json; charset=utf-8");
-
+        PrintWriter pw = response.getWriter();
 
 		try{
 
-			String sid = CFUtil.getParam(request, "sid");
-			//String project_id = CFUtil.getParam(request, "project_id");
+			CFServletParams params = new CFServletParams(this, request, response, new File(Const.DEFAULT_UPFILES_NAME));//			if(TextUtil.isEmpty(sid)) throw new Exception("non sid");
 
-			if(TextUtil.isEmpty(sid)) throw new Exception("non sid");
-			//if(TextUtil.isEmpty(project_id)) throw new Exception("non project id.");
+//			if(TextUtil.isEmpty(project_id)) throw new Exception("non project id.");
 
+
+			String user_id;
+
+			HttpSession ses = request.getSession();
+			user_id = (String) ses.getAttribute(Const.SES_USER_ID);
+
+//			project_id = "MyxLvXLIoYYLDurWxDqYPECZSZOwRXaN";
+//			user_id = "chikara";
+
+			//if(TextUtil.isEmpty(project_id))  throw new Exception("not select project.");
+			if(TextUtil.isEmpty(user_id))  throw new Exception("not login.");
 
 	         //データベースへの接続
-			Connection cn = Const.getDefaultDBConnection();
-
-	         DBSessionTable db_st = new DBSessionTable(cn);
-	         SessionRow sr = db_st.getBySessionID(sid);
-
-	         if(sr==null){
-	        	 cn.close();
-	        	 throw new Exception("not login.");
-	         }
-
-//			if(project_id == null) project_id = "LPWKfLCkJborUPAggfNIcWtfPPERzAlR";
+	         cn = Const.getDefaultDBConnection();
+	         cn.setAutoCommit(false);
 
 
-			DBProjectTable db_pro = new DBProjectTable(cn);
-//			ProjectRow pr = db_pro.getById(project_id);
-//			if(pr==null) throw new Exception("not exist project.");
+	         DBProjectTable db_pro = new DBProjectTable(cn);
+	         List<ProjectRow> pro_list = db_pro.listAll();
+	         if(pro_list==null) throw new Exception("not exist project.");
 
-			List<ProjectRow> prlist = db_pro.listByAuthor(sr.user_id);
-	         if(prlist==null) throw new Exception("err list project..");
+//	         for(int i=0;i<pro_list.size();i++){
+//	        	 project_list.add(pro_list.get(i));
+//	         }
 
+	         //接続のクローズ
+	         cn.commit(); cn.close(); cn = null;
 
-			PrintWriter pw = response.getWriter();
-			response.setStatus(HttpServletResponse.SC_OK);
-
+	         //結果
 	         ObjectMapper om = new ObjectMapper();
 	         om.configure(SerializationFeature.INDENT_OUTPUT  , true);
 
 	         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
-	         ArrayList<LinkedHashMap<String, Object>> bb = new ArrayList<LinkedHashMap<String,Object>>();
+	         ArrayList<LinkedHashMap<String, Object>> b_data = new ArrayList<LinkedHashMap<String,Object>>();
 
-	         for(int i=0;i<prlist.size();i++){
-	        	 ProjectRow pr = prlist.get(i);
+	         for(int i=0;i<pro_list.size();i++){
+	        	 ProjectRow pr = pro_list.get(i);
 
-	        	LinkedHashMap<String, Object> bi = new LinkedHashMap<String, Object>();
-	        	bi.put("project_id", pr.id);
-	        	bi.put("project_name", pr.name);
-	        	bi.put("author_id", pr.author_id);
-	        	bi.put("publish_ur", pr.publish_url);
+	        	 LinkedHashMap<String, Object> bi = new LinkedHashMap<String, Object>();
 
-	        	bb.add(bi);
+	        	 bi.put("project_id", pr.id);
+	        	 bi.put("project_name", pr.name);
+	        	 bi.put("author_id", pr.author_id);
+	        	 bi.put("publish_url", pr.publish_url);
+
+	        	 b_data.add(bi);
 	         }
 
+
 	         b.put("result", "OK");
-	         b.put("data_list", bb);
+	         b.put("data", b_data);
 
 	         String json = om.writeValueAsString(b);
+	         //json = "callback(" + json + ");";
+
+	         response.setStatus(HttpServletResponse.SC_OK);
 	         pw.write(json);
 
-	         //接続のクローズ
-	         cn.close();
+
 	     }
 	     catch(Exception e){
 	        e.printStackTrace();
 
-			//response.setContentType("application/json; charset=utf-8");
+	         ObjectMapper om = new ObjectMapper();
+	         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
+	         b.put("result", "FAILED");
+	         b.put("info", e.getMessage() );
 
-	        ///response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+	         String json = om.writeValueAsString(b);
 
-	        response.sendError( HttpServletResponse.SC_BAD_REQUEST, e.getMessage() );
-
+	         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	         pw.write(json);
 	     }
+
+
+		//データベースと切断
+		if(cn!=null){ try { if( !cn.isClosed() ) cn.close(); cn = null;} catch (SQLException e) { e.printStackTrace();}}
+
+
+
+
+
+
+
+
+
+//
+//		CFUtil.initMySQLDriver();
+//
+//		response.setContentType("application/json; charset=utf-8");
+//
+//
+//		try{
+//
+//			String sid = CFUtil.getParam(request, "sid");
+//			//String project_id = CFUtil.getParam(request, "project_id");
+//
+//			if(TextUtil.isEmpty(sid)) throw new Exception("non sid");
+//			//if(TextUtil.isEmpty(project_id)) throw new Exception("non project id.");
+//
+//
+//	         //データベースへの接続
+//			Connection cn = Const.getDefaultDBConnection();
+//
+//	         DBSessionTable db_st = new DBSessionTable(cn);
+//	         SessionRow sr = db_st.getBySessionID(sid);
+//
+//	         if(sr==null){
+//	        	 cn.close();
+//	        	 throw new Exception("not login.");
+//	         }
+//
+////			if(project_id == null) project_id = "LPWKfLCkJborUPAggfNIcWtfPPERzAlR";
+//
+//
+//			DBProjectTable db_pro = new DBProjectTable(cn);
+////			ProjectRow pr = db_pro.getById(project_id);
+////			if(pr==null) throw new Exception("not exist project.");
+//
+//			List<ProjectRow> prlist = db_pro.listByAuthor(sr.user_id);
+//	         if(prlist==null) throw new Exception("err list project..");
+//
+//
+//			PrintWriter pw = response.getWriter();
+//			response.setStatus(HttpServletResponse.SC_OK);
+//
+//	         ObjectMapper om = new ObjectMapper();
+//	         om.configure(SerializationFeature.INDENT_OUTPUT  , true);
+//
+//	         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
+//	         ArrayList<LinkedHashMap<String, Object>> bb = new ArrayList<LinkedHashMap<String,Object>>();
+//
+//	         for(int i=0;i<prlist.size();i++){
+//	        	 ProjectRow pr = prlist.get(i);
+//
+//	        	LinkedHashMap<String, Object> bi = new LinkedHashMap<String, Object>();
+//	        	bi.put("project_id", pr.id);
+//	        	bi.put("project_name", pr.name);
+//	        	bi.put("author_id", pr.author_id);
+//	        	bi.put("publish_ur", pr.publish_url);
+//
+//	        	bb.add(bi);
+//	         }
+//
+//	         b.put("result", "OK");
+//	         b.put("data_list", bb);
+//
+//	         String json = om.writeValueAsString(b);
+//	         pw.write(json);
+//
+//	         //接続のクローズ
+//	         cn.close();
+//	     }
+//	     catch(Exception e){
+//	        e.printStackTrace();
+//
+//			//response.setContentType("application/json; charset=utf-8");
+//
+//	        ///response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+//
+//	        response.sendError( HttpServletResponse.SC_BAD_REQUEST, e.getMessage() );
+//
+//	     }
 
 	}
 

@@ -2,9 +2,9 @@
 <%-- JavaBeansをインポートします。 --%>
 <%@ page import="java.beans.Beans.*" %>
 <%-- <jsp:useBean>タグでJavaBeansのオブジェクトを生成します。 --%>
-    
-    
-    
+
+
+
     </div> <!-- /container -->
 
     <hr>
@@ -29,7 +29,8 @@
     	//$('#'+s).attr('checked', !$('#'+s).attr('checked') );
 
     	  //var connection = new WebSocket('ws://bresto.cloudapp.net:8080/BreStoServer0/api/socket_node_edge');
-    	  var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge');
+    	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge');
+    	  var connection = new WebSocket('ws://192.168.1.117:8080/BreStoServer0/api/socket_node_edge');
 
     	  //var connection = new WebSocket('ws://localhost:8080/BreStoServer0/api/socket_node_edge', ['bresto_json']);
 

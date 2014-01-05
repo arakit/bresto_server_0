@@ -44,8 +44,8 @@ public class DBkeywordsTable {
     	row.project_id = rs.getString(COL_PROJECT_ID);
     	row.x = 0;
     	row.y = 0;
-    	row.w = 100;
-    	row.h = 100;
+    	row.w = 20;
+    	row.h = 20;
 		return row;
 	}
 

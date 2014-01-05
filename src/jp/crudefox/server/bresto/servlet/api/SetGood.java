@@ -78,6 +78,13 @@ public class SetGood extends HttpServlet {
 		Connection cn = null;
 		CFUtil.initMySQLDriver();
 
+
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
+		response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+		response.setHeader("Access-Control-Max-Age", "-1");
+
+
 		response.setContentType("application/json; charset=utf-8");
         PrintWriter pw = response.getWriter();
 
@@ -97,12 +104,15 @@ public class SetGood extends HttpServlet {
 			if( kid < 0 ) throw new Exception("can not kid < 0");
 
 			boolean value = Boolean.valueOf(_value);
-			
+
 			String project_id, user_id;
 
 			HttpSession ses = request.getSession();
 			project_id = (String) ses.getAttribute(Const.SES_PROJECT_ID);
 			user_id = (String) ses.getAttribute(Const.SES_USER_ID);
+
+//			project_id = "MyxLvXLIoYYLDurWxDqYPECZSZOwRXaN";
+//			user_id = "chikara";
 
 			if(TextUtil.isEmpty(project_id))  throw new Exception("not select project.");
 			if(TextUtil.isEmpty(user_id))  throw new Exception("not login.");
@@ -151,7 +161,7 @@ public class SetGood extends HttpServlet {
 	         SocketNodeEdge nd = SocketNodeEdge.getInstance();
 	         if(nd!=null){
 	        	 System.out.println("goodしたい");
-	        	 nd.addNodeAndEdge(project_id, Const.toNode(kr, good_list.size()), null);
+	        	 nd.addNodeAndEdge(project_id, Const.toNode(kr, good_list.size()), null, value);
 	         }
 
 	         //接続のクローズ
@@ -177,6 +187,8 @@ public class SetGood extends HttpServlet {
 	         String json = om.writeValueAsString(b);
 
 	         response.setStatus(HttpServletResponse.SC_OK);
+
+	         //json = "callback(" + json + ");";
 	         pw.write(json);
 
 
@@ -190,7 +202,7 @@ public class SetGood extends HttpServlet {
 	         b.put("info", e.getMessage() );
 
 	         String json = om.writeValueAsString(b);
-	         
+
 	         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	         pw.write(json);
 	     }

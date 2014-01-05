@@ -1,0 +1,73 @@
+html, body{
+    height: 100%;
+}
+
+.container {
+    padding-bottom: 74px;
+}
+
+canvas {
+    z-index: 0;
+}
+
+#loading {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    margin-left: -30px;
+}
+
+#good {
+    position: fixed;
+    z-index: 1029;
+    right: 0;
+    top: 0;
+    padding: 1px;
+    margin: 2px;
+}
+
+#footer {
+    position: fixed;
+    z-index: 1030;
+    bottom: 0;
+    height: 74px;
+    width: 100%;
+    padding-top: 1px;
+    margin-left: 1px;
+}
+
+.suggestion-viewport {
+    float: left;
+    width: 90%;
+    overflow: hidden;
+}
+
+.suggestion {
+    width: 1024px;
+    display: block;
+    margin: 0;
+    padding: 2px;
+}
+
+.suggestion .item {
+    display: block;
+    float: left;
+    list-style-type: none;
+    text-align: center;
+    padding: 1px;
+    margin: 2px;
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+.remove-aside-button {
+    float: right;
+    margin: 4px;
+}
+
+.message {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1050;
+}

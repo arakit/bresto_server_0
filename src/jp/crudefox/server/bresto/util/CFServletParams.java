@@ -39,14 +39,31 @@ public class CFServletParams {
 		try{
 			String contentType = req.getContentType();
 			MimeType mimeType = contentType!=null ? new MimeType( contentType ) : null;
+
+			System.out.println("mime type = "+mimeType);
+			String charset = null;
+			if(mimeType!=null){
+				charset = mimeType.getParameter("charset");
+				if(charset!=null){
+					req.setCharacterEncoding(charset);
+				}
+//				System.out.println("par : "+mimeType.getParameter("charset"));
+//				System.out.println("b : "+mimeType.getBaseType());
+//				System.out.println("p : "+mimeType.getPrimaryType());
+//				System.out.println("s : "+mimeType.getSubType());
+			}
+			String method = req.getMethod();
+
 			if(mimeType!=null && mimeType.match("multipart/form-data")){
 				initParamsFromMultiPartFormData(s, req, mimeType, tmpdir);
+			}else if(method!=null && method.equalsIgnoreCase("GET")){
+				initParamsFromReqParam(s, req, charset);
 			}else{
-				initParamsFromReqParam(s, req);
+				initParamsFromReqParam(s, req, charset);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	public void putAdd(String key,Object val){
@@ -98,12 +115,17 @@ public class CFServletParams {
 		return getFileParam(key, 0);
 	}
 
-	private void initParamsFromReqParam(HttpServlet servlet, HttpServletRequest req){
+	private void initParamsFromReqParam(HttpServlet servlet, HttpServletRequest req, String charset){
 		Map<String, String[]> map = req.getParameterMap();
 		for(Entry<String, String[]> e : map.entrySet()){
 			String[] vals1 = e.getValue();
 			for(int i=0;i<vals1.length;i++){
-				String val2 = CFUtil.decodeStringFrom8859_1( vals1[i] );
+				String val2 = null;
+				if(charset!=null){
+					val2 = vals1[i];
+				}else{
+					val2 = CFUtil.decodeStringFrom8859_1( vals1[i] );
+				}
 				if( val2 == null ) val2 = vals1[i];
 				putAdd(e.getKey(), val2);
 			}

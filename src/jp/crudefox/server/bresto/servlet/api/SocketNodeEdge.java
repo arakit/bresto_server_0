@@ -62,6 +62,11 @@ public class SocketNodeEdge extends WebSocketServlet{
 		Project pro = null;
 		boolean is_first = false;
 
+
+//		user_id = "chikara";
+//		project_id = "MyxLvXLIoYYLDurWxDqYPECZSZOwRXaN";
+
+
 		if(TextUtil.isEmpty(user_id)) return null;
 		if(TextUtil.isEmpty(project_id)) return null;
 
@@ -182,14 +187,14 @@ public class SocketNodeEdge extends WebSocketServlet{
 
 
 
-	public void addNodeAndEdge(String project_id, Node kw, Edge kr){
+	public void addNodeAndEdge(String project_id, Node kw, Edge kr, boolean pluslike){
 		//if(mMainThread==null) return ;
 		Project pro = null;
 		synchronized (mProjects) {
 			pro = mProjects.get(project_id);
 		}
 		if(pro == null) return ;
-		pro.addNodeAndEdge(kw, kr);
+		pro.addNodeAndEdge(kw, kr, pluslike);
 	}
 
 //	public void addNode(KeywordsRow kw){

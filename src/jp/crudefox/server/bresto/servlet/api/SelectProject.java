@@ -73,12 +73,14 @@ public class SelectProject extends HttpServlet {
 		Connection cn = null;
 		CFUtil.initMySQLDriver();
 
+		CFServletParams params = new CFServletParams(this, request, response, new File(Const.DEFAULT_UPFILES_NAME));
+		String mode = params.getStringParam("mode");
+		if(TextUtil.isEmpty(mode)) mode = "api";
+
 		response.setContentType("application/json; charset=utf-8");
         PrintWriter pw = response.getWriter();
 
 		try{
-
-			CFServletParams params = new CFServletParams(this, request, response, new File(Const.DEFAULT_UPFILES_NAME));
 			String project_id = params.getStringParam("project_id");
 
 			if(project_id==null) throw new Exception("non project_id.");
@@ -109,43 +111,51 @@ public class SelectProject extends HttpServlet {
 	         cn.close(); cn = null;
 
 	         //結果
-	         ObjectMapper om = new ObjectMapper();
-	         om.configure(SerializationFeature.INDENT_OUTPUT  , true);
-
-	         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
-	         LinkedHashMap<String, Object> b_data = new LinkedHashMap<String, Object>();
-
-	         if(pr!=null){
-		         b_data.put("project_id", pr.id);
-		         b_data.put("project_name", pr.name);
+	         if("navigate".equals(mode)){
+			        response.sendRedirect("../play.html");
 	         }else{
-		         b_data.put("project_id", null);
-		         b_data.put("project_name", null);
+		         ObjectMapper om = new ObjectMapper();
+		         om.configure(SerializationFeature.INDENT_OUTPUT  , true);
+
+		         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
+		         LinkedHashMap<String, Object> b_data = new LinkedHashMap<String, Object>();
+
+		         if(pr!=null){
+			         b_data.put("project_id", pr.id);
+			         b_data.put("project_name", pr.name);
+		         }else{
+			         b_data.put("project_id", null);
+			         b_data.put("project_name", null);
+		         }
+
+
+		         b.put("result", "OK");
+		         b.put("data", b_data);
+
+		         String json = om.writeValueAsString(b);
+
+		         response.setStatus(HttpServletResponse.SC_OK);
+		         pw.write(json);
 	         }
-
-
-	         b.put("result", "OK");
-	         b.put("data", b_data);
-
-	         String json = om.writeValueAsString(b);
-
-	         response.setStatus(HttpServletResponse.SC_OK);
-	         pw.write(json);
 
 
 	     }
 	     catch(Exception e){
 	        e.printStackTrace();
 
-	         ObjectMapper om = new ObjectMapper();
-	         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
-	         b.put("result", "FAILED");
-	         b.put("info", e.getMessage() );
+	         if("navigate".equals(mode)){
+			        response.sendRedirect("../bresto.html");
+	         }else{
+		         ObjectMapper om = new ObjectMapper();
+		         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
+		         b.put("result", "FAILED");
+		         b.put("info", e.getMessage() );
 
-	         String json = om.writeValueAsString(b);
-	         
-	         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-	         pw.write(json);
+		         String json = om.writeValueAsString(b);
+
+		         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		         pw.write(json);
+	         }
 	     }
 
 

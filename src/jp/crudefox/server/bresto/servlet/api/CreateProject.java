@@ -17,6 +17,8 @@ import javax.servlet.http.HttpSession;
 import jp.crudefox.server.bresto.Const;
 import jp.crudefox.server.bresto.db.DBProjectTable;
 import jp.crudefox.server.bresto.db.DBProjectTable.ProjectRow;
+import jp.crudefox.server.bresto.db.DBkeywordsTable;
+import jp.crudefox.server.bresto.db.DBkeywordsTable.KeywordsRow;
 import jp.crudefox.server.bresto.util.CFServletParams;
 import jp.crudefox.server.bresto.util.CFUtil;
 import jp.crudefox.server.bresto.util.TextUtil;
@@ -70,10 +72,10 @@ public class CreateProject extends HttpServlet {
 
 		Connection cn = null;
 		CFUtil.initMySQLDriver();
-		
+
 		CFServletParams params = new CFServletParams(this, request, response, new File(Const.DEFAULT_UPFILES_NAME));
 		String mode = params.getStringParam("mode");
-		if(TextUtil.isEmpty(mode)) mode = "api";		
+		if(TextUtil.isEmpty(mode)) mode = "api";
 
 		response.setContentType("application/json; charset=utf-8");
         PrintWriter pw = response.getWriter();
@@ -83,22 +85,24 @@ public class CreateProject extends HttpServlet {
 			String project_name = params.getStringParam("project_name");
 			String _width = params.getStringParam("width");
 			String _height = params.getStringParam("height");
+			String keyword = params.getStringParam("keyword");
 
 //			if(TextUtil.isEmpty(sid)) throw new Exception("non sid");
 //			if(TextUtil.isEmpty(project_id)) throw new Exception("non project id.");
 //			if(TextUtil.isEmpty(parent_kid)) throw new Exception("non project name");
 			if(TextUtil.isEmpty(project_name)) throw new Exception("non project_name.");
+			if(TextUtil.isEmpty(keyword)) throw new Exception("non keyword.");
 
 			int width, height;
 			if( TextUtil.isEmpty( _width ) ) width = 500;
 			else width = Integer.parseInt(_width);
 			if( width < 100 ) throw new Exception("can not parent_kid < 100");
-			
+
 			if( TextUtil.isEmpty( _height ) ) height = 500;
 			else height = Integer.parseInt(_height);
 			if( height < 100 ) throw new Exception("can not parent_kid < 100");
-			
-			
+
+
 			String user_id;
 
 			HttpSession ses = request.getSession();
@@ -114,29 +118,38 @@ public class CreateProject extends HttpServlet {
 	         ProjectRow pr = db_pro.insertNew(project_name, user_id);
 	         if(pr==null) throw new Exception("failed insert new.");
 
+	         DBkeywordsTable k_tb = new DBkeywordsTable(cn);
+	         KeywordsRow kr = new KeywordsRow();
+	         kr.x = 0; kr.y = 0;
+	         kr.w = 20; kr.h = 20;
+	         kr.keyword = keyword;
+	         kr.project_id = pr.id;
+	         kr = k_tb.insertByAutoIncrement(kr);
+
+	         if(kr==null) throw new Exception("failed insert new keyword.");
 
 	         //接続のクローズ
 	         cn.commit(); cn.close(); cn = null;
-	         
+
 	         if("navigate".equals(mode)){
 			        response.sendRedirect("../bresto.html");
 	         }else{
 		         //結果
 		         ObjectMapper om = new ObjectMapper();
 		         om.configure(SerializationFeature.INDENT_OUTPUT  , true);
-	
+
 		         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
 		         LinkedHashMap<String, Object> b_data = new LinkedHashMap<String, Object>();
-	
+
 		         b_data.put("project_id", pr.id);
 		         b_data.put("project_name", pr.name);
-	
-	
+
+
 		         b.put("result", "OK");
 		         b.put("data", b_data);
-	
+
 		         String json = om.writeValueAsString(b);
-	
+
 		         response.setStatus(HttpServletResponse.SC_OK);
 		         pw.write(json);
 	         }
@@ -153,9 +166,9 @@ public class CreateProject extends HttpServlet {
 		         LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
 		         b.put("result", "FAILED");
 		         b.put("info", e.getMessage() );
-	
+
 		         String json = om.writeValueAsString(b);
-		         
+
 		         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		         pw.write(json);
 	        }

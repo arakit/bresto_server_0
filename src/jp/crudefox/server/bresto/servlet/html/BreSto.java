@@ -65,15 +65,13 @@ public class BreSto extends HttpServlet {
 		CFUtil.initMySQLDriver();
 
 		final ArrayList<ProjectRow> project_list = new ArrayList<DBProjectTable.ProjectRow>();
+		
+		HttpSession ses = request.getSession();
+		String user_id = (String) ses.getAttribute(Const.SES_USER_ID);
 
 		try{
-			String project_id, user_id;
-
-			HttpSession ses = request.getSession();
-			//project_id = (String) ses.getAttribute(Const.SES_PROJECT_ID);
-			user_id = (String) ses.getAttribute(Const.SES_USER_ID);
-
-			//if(TextUtil.isEmpty(project_id))  throw new Exception("not select project.");
+			String project_id;
+			
 			if(TextUtil.isEmpty(user_id))  throw new Exception("not login.");
 
 	         //データベースへの接続
@@ -129,11 +127,13 @@ public class BreSto extends HttpServlet {
 		if(cn!=null){ try { if( !cn.isClosed() ) cn.close(); cn = null;} catch (SQLException e) { e.printStackTrace();}}
 
 
-		
-		request.setAttribute(Const.REQ_PROJECT_LIST, project_list);
-		
+		if(!TextUtil.isEmpty(user_id)){
+			request.setAttribute(Const.REQ_PROJECT_LIST, project_list);
+			dispatch.forward(request, response);			
+		}else{
+			response.sendRedirect("./signin.html");
+		}
 
-		dispatch.forward(request, response);
 
 	}
 

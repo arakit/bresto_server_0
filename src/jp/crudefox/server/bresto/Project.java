@@ -1,5 +1,6 @@
 package jp.crudefox.server.bresto;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -31,17 +32,27 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WsOutbound;
 
+import test.Particle;
+import test.Systems;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 
 public class Project{
 
 
-	private static final String VSESION = "4";
+	private static final String VSESION = "5";
+
+
+	private Systems mSystems;
 
 
 	private final ArrayList<MyMessageInbound> mList = new ArrayList<MyMessageInbound>();
+
+
+	public Project() {
+		mSystems = new Systems();
+	}
 
 
 	public StreamInbound createWebSocketInbound(String protocol, HttpServletRequest req){
@@ -173,11 +184,19 @@ public class Project{
 			}
 			//送信用の保留データを取得
 			ArrayList<Edge> krs = new ArrayList<Edge>();
-			synchronized (mmAddEdge) {
-				for(int i=0;i<mmAddEdge.size();i++){
-					krs.add(mmAddEdge.get(i));
+//			synchronized (mmAddEdge) {
+//				for(int i=0;i<mmAddEdge.size();i++){
+//					krs.add(mmAddEdge.get(i));
+//				}
+//				mmAddEdge.clear();
+//			}
+			if(mmAddEdge.size()>0){
+					synchronized (mEdges) {
+					for(int i=0;i<mEdges.size();i++){
+						krs.add(mEdges.get(i));
+					}
+					mmAddEdge.clear();
 				}
-				mmAddEdge.clear();
 			}
 
 			//Node Edge
@@ -316,7 +335,7 @@ public class Project{
 //	         }
 
 			//if(project_id == null) project_id = "LPWKfLCkJborUPAggfNIcWtfPPERzAlR";
-			if(project_id == null) project_id = "p1";
+			//if(project_id == null) project_id = "p1";
 
 			DBkeywordsTable k_tb = new DBkeywordsTable(cn);
 			DBKeywordsRelationTable r_tb = new DBKeywordsRelationTable(cn);
@@ -342,6 +361,9 @@ public class Project{
 				node_rows.add(node);
 				mNodes.put(e.kid, node);
 				mSuggestTaskQue.add(node);
+
+				mSystems.addNode(""+node.id, new test.Node())
+				.initWithName(""+node.id, 1.0, new Point2D.Double(node.x,  node.y), i==0, node.like );
 			}
 
 			for(int i=0;i<r_rows.size();i++){
@@ -349,6 +371,7 @@ public class Project{
 				Edge edge = Const.toEdge(e);
 				edge_rows.add(edge);
 				mEdges.add( edge );
+				mSystems.addEdgeFromNode(""+edge.pid, ""+edge.cid, new test.Edge());
 			}
 
 //			for(int i=0;i<k_rows.size();i++){
@@ -374,6 +397,61 @@ public class Project{
 
 
 
+	private void executeUpdateArbor(){
+
+		Systems s = mSystems;
+
+		boolean is_updated = false;
+		int cn = 0;
+
+		for(int i = 0; i < 10000 ; i++) {
+			boolean mv = s.physics.update();
+
+			if(!mv) break;
+
+			//is_updated = true;
+			cn = i;
+
+//			for(Particle p : s.physics.activeParticles) {
+//				System.out.println(p.name + "  " + p.position);
+//			}
+
+		}
+
+		System.out.println("executeUpdateArbor info "+cn);
+
+		ArrayList<Node> krs = new ArrayList<Node>();
+
+		for(Particle p : s.physics.activeParticles) {
+			//System.out.println(p.name + "  " + p.position);
+			Node node = mNodes.get( Integer.parseInt(p.name) );
+			//if( node.x != (int)p.position.x || node.y != (int)p.position.y || node.scale_x!=(int)p.circleradius ){
+			if( Math.abs(node.x-p.position.x)>10 ||
+				Math.abs(node.y-p.position.y)>10 ||
+				node.scale_x!=(int)p.circleradius ){
+				is_updated = true;
+				node.x = (int) p.position.x;
+				node.y = (int) p.position.y;
+				node.scale_x = (int) p.circleradius;
+				node.scale_y = (int) p.circleradius;
+				krs.add(node);
+			}
+		}
+
+
+		if(is_updated){
+			if(mMainThread!=null){
+//				synchronized (mNodes) {
+//					for(Entry<Integer, Node> e : mNodes.entrySet()){
+//						krs.add(e.getValue());
+//					}
+//				}
+				mMainThread.addNode(krs, false);
+			}
+		}
+
+
+	}
 
 
 
@@ -411,7 +489,7 @@ public class Project{
 			//response.setStatus(HttpServletResponse.SC_OK);
 
 			ObjectMapper om = new ObjectMapper();
-			om.configure(SerializationFeature.INDENT_OUTPUT  , true);
+			//om.configure(SerializationFeature.INDENT_OUTPUT  , true);
 
 			LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
 			LinkedHashMap<String, Object> b_data = new LinkedHashMap<String, Object>();
@@ -487,7 +565,7 @@ public class Project{
 		try{
 
 			ObjectMapper om = new ObjectMapper();
-			om.configure(SerializationFeature.INDENT_OUTPUT  , true);
+			//om.configure(SerializationFeature.INDENT_OUTPUT  , true);
 
 			LinkedHashMap<String, Object> b = new LinkedHashMap<String, Object>();
 			LinkedHashMap<String, Object> b_data = new LinkedHashMap<String, Object>();
@@ -537,7 +615,7 @@ public class Project{
 
 
 	//ノードとエッジを追加して送信。検索タスクも追加、
-	public void addNodeAndEdge(Node kw, Edge kr){
+	public void addNodeAndEdge(Node kw, Edge kr, boolean pluslike){
 		if(mMainThread==null) return ;
 		ArrayList<Node> ks = new ArrayList<Node>();
 		ArrayList<Edge> rs = new ArrayList<Edge>();
@@ -545,10 +623,15 @@ public class Project{
 		if(kw!=null){
 			ks.add(kw);
 			mNodes.put(kw.id, kw);
+			test.Node tn = mSystems.addNode(""+kw.id, new test.Node())
+			.initWithName(""+kw.id, 1.0, new Point2D.Double(kw.x,  kw.y), false, kw.like);
+			;
+			if(pluslike) tn.PlusLike();
 		}
 		if(kr!=null){
 			rs.add(kr);
 			mEdges.add(kr);
+			mSystems.addEdgeFromNode(""+kr.pid, ""+kr.cid, new test.Edge());
 		}
 
 		//ノードとエッジ追加
@@ -700,7 +783,7 @@ public class Project{
 
 
 	private MainThread mMainThread;
-	private SujjestThread mSujjestThread;
+	private SuggestThread mSujjestThread;
 
 
 	public synchronized void startMainThread(){
@@ -728,7 +811,7 @@ public class Project{
 
 		System.out.println("startSujjestThread");
 
-		mSujjestThread = new SujjestThread();
+		mSujjestThread = new SuggestThread();
 		mSujjestThread.start();
 
 	}
@@ -781,11 +864,12 @@ public class Project{
 					//sample();
 				}
 
-
 				if(now_time-before_move_time>=5*1000){
-					moveNodesSamples();
+					//moveNodesSamples();
 					before_move_time = now_time;
 				}
+
+				executeUpdateArbor();
 
 
 				//送信
@@ -894,7 +978,7 @@ public class Project{
 
 	}
 
-	private class SujjestThread extends Thread {
+	private class SuggestThread extends Thread {
 
 		boolean mmIsCanceld = false;
 
@@ -930,6 +1014,10 @@ public class Project{
 					Node sk = mSuggestTaskQue.poll();
 					while(sk!=null){
 						if(sk!=null){
+							try {
+								sleep(100);
+							} catch (InterruptedException e) {
+							}
 							ArrayList<Node> sks = new ArrayList<Node>();
 							sks.add(sk);
 							execSuggest(sks);
@@ -958,8 +1046,8 @@ public class Project{
 		}
 
 		public void go(){
-			if( !SujjestThread.this.isInterrupted() ){
-				SujjestThread.this.interrupt();
+			if( !SuggestThread.this.isInterrupted() ){
+				SuggestThread.this.interrupt();
 			}
 		}
 
@@ -981,9 +1069,9 @@ public class Project{
 			if(mmIsCanceld) return ;
 			System.out.println("cancel start");
 			mmIsCanceld = true;
-			SujjestThread.this.interrupt();
+			SuggestThread.this.interrupt();
 			try {
-				SujjestThread.this.join();
+				SuggestThread.this.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
