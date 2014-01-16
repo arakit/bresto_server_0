@@ -2,9 +2,14 @@ $(function () {
     "use strict";
 
     var bresto = util.namespace('bresto'),
-        wsUrl = "ws://192.168.1.117:8080/BreStoServer0/api/socket_node_edge",
-        submitUrl = "http://192.168.1.117:8080/BreStoServer0/api/add_node",
-        goodUrl = "http://192.168.1.117:8080/BreStoServer0/api/set_good",
+        host = ""+location.host,
+        //host = "192.168.1.4:8080",
+        wsUrl = "ws://"+host+"/BreStoServer0/api/socket_node_edge",
+        submitUrl = "http://"+host+"/BreStoServer0/api/add_node",
+        goodUrl = "http://"+host+"/BreStoServer0/api/set_good",
+        //wsUrl = "ws://192.168.1.117:8080/BreStoServer0/api/socket_node_edge",
+        //submitUrl = "http://192.168.1.117:8080/BreStoServer0/api/add_node",
+        //goodUrl = "http://192.168.1.117:8080/BreStoServer0/api/set_good",
         is_form_enabled = ko.observable(false),
         node_suggestion = ko.observableArray([]),
         node_from = ko.observable(""),
@@ -13,6 +18,9 @@ $(function () {
         canvas,
         system,
         connection;
+
+    console.log("host = " + host);
+    console.log("websocket = " + wsUrl);
 
     function show_indicator() {
         $("#loading").fadeIn();

@@ -406,7 +406,7 @@ public class Project{
 
 		for(int i = 0; i < 10000 ; i++) {
 			boolean mv = s.physics.update();
-
+			
 			if(!mv) break;
 
 			//is_updated = true;

@@ -25,6 +25,7 @@
             // text
             textFillStyle: "#333",
             textFontBaseSize: 14,
+            textFontBaseSizeK: 1.2,
             textFontFamily: "メイリオ",
             // edge
             edgeStrokeStyle: "#ccc",
@@ -101,8 +102,10 @@
                 .animateLayerGroup(node_group, {
                     x: '+=' + diff.x,
                     y: '+=' + diff.y,
-                    width: node.w * this.goodK,
-                    height: node.h * this.goodK,
+                    //width: node.w,
+                    //height: node.h,
+                    width: node.w * this.options.goodK,
+                    height: node.h * this.options.goodK,
                     fontSize: this.options.textFontBaseSize + this.options.textFontBaseSize * node.good
                 }, this.options.duration, this.options.easing);
 

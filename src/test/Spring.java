@@ -3,20 +3,20 @@ package test;
 //import java.io.Serializable;
 
 public class Spring extends Edge{
-	public double stiffness;// ‚Î‚Ë
-	
+	public double stiffness;// ï¿½Î‚ï¿½
+
 	public Spring() {
-		setStiffness(300.0);
+		setStiffness(500.0);
 	}
-	
+
 	public Particle point1(){
-		return (Particle) this.source;// eƒm[ƒh
+		return (Particle) this.source;// ï¿½eï¿½mï¿½[ï¿½h
 	}
-	
+
 	public Particle point2() {
-		return (Particle) this.target;// qƒm[ƒh
+		return (Particle) this.target;// ï¿½qï¿½mï¿½[ï¿½h
 	}
-	
+
 	public double distanceToParticle(Particle particle) {
 		return this.distanceToNode(particle);
 	}

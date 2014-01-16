@@ -165,13 +165,13 @@ public class Physics extends Object{
 					 * ��̓_�͂��ꂼ��t���֗͂���������
 					 */
 					Point2D.Double force = support.PointDivide(
-								support.PointScale( direction, (repulsion * object.mass * (object.circleradius / 50) * 5) ) ,
+								support.PointScale( direction, (repulsion * object.mass * 6) ) ,
 									(distance * distance * 0.5 ) );
 
 					subject.applyForce(force);
 
 					force = support.PointDivide(
-								support.PointScale( direction, (repulsion * subject.mass * (subject.circleradius/ 50) * 5) ) ,
+								support.PointScale( direction, (repulsion * subject.mass * 6) ) ,
 									(distance * distance * -0.5 ) );
 
 					object.applyForce(force);
@@ -228,7 +228,7 @@ public class Physics extends Object{
 			if(particle.position.x > w + 10 || particle.position.x < -10 - w || particle.position.y > h + 10 || particle.position.y < -10 - h){
 				particle.applyForce(su.PointScale(direction, (repulsion / 50.0)));
 			} else {
-				particle.applyForce(su.PointScale(direction, (repulsion / 120.0)));
+				particle.applyForce(su.PointScale(direction, (repulsion / 500.0)));
 			}
 
 		}
